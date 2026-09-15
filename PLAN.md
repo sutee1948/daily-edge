@@ -124,7 +124,7 @@
 
 | # | หัวข้อ | รูปแบบ | ต้นทาง |
 |---|---|---|---|
-| C1 | Project Aristotle: Psychological Safety คือปัจจัย #1 | STORY | Google re:Work; Edmondson |
+| C1 | Project Aristotle: Psychological Safety คือปัจจัย #1 | CLASSIC | Google re:Work; Edmondson |
 | C2 | Radical Candor — แคร์จริง + พูดตรง | PLAYBOOK | Kim Scott |
 | C3 | 1:1 ที่ไม่เสียเวลา — โครงสร้างที่ใช้ได้จริง | PLAYBOOK | Grove, *High Output Management* |
 | C4 | SBI Model — ให้ฟีดแบ็กโดยไม่พังความสัมพันธ์ | PLAYBOOK | Center for Creative Leadership |
@@ -156,7 +156,7 @@
 
 | # | หัวข้อ | รูปแบบ | ต้นทาง |
 |---|---|---|---|
-| E1 | Testing Effect — ทำไมทดสอบตัวเองชนะการอ่านซ้ำ | STORY | Roediger & Karpicke 2006 |
+| E1 | Testing Effect — ทำไมทดสอบตัวเองชนะการอ่านซ้ำ | MYTH-BUST | Roediger & Karpicke 2006 |
 | E2 | นอน = กด Compile ความจำ | CLASSIC | Walker; Stickgold |
 | E3 | โดปามีนไม่ใช่ "สารแห่งความสุข" แต่คือ "สารแห่งการไล่ล่า" | MYTH-BUST | Berridge & Robinson |
 | E4 | Working Memory จริง ๆ คือ 4±1 ไม่ใช่ 7±2 | MYTH-BUST | Cowan 2001 |
@@ -602,7 +602,7 @@ new knowledge to day/
 | Phase | สถานะ | วันที่อนุมัติ | หมายเหตุ |
 |---|---|---|---|
 | 0 วางแผน | ✅ ร่างเสร็จ | 2026-09-16 | รอรีวิว |
-| 1 โครงกระดูก + 3 บท | ⏳ รออนุมัติ | | |
+| 1 โครงกระดูก + 3 บท | ✅ เสร็จแล้ว | 2026-09-16 | typecheck+build ผ่าน, 3 บทจริง 8 ข้อ/บท, ~8 นาที/บท |
 | 2 ระบบรายวัน | ⏳ | | |
 | 3 เนื้อหา 14 บท | ⏳ | | |
 | 4 คลัง + ทบทวน | ⏳ | | |
