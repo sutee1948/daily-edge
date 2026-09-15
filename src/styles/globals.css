@@ -1,0 +1,59 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+html.dark {
+  color-scheme: dark;
+}
+
+body {
+  background-color: #fbf9f5;
+  color: #1c1a17;
+}
+
+html.dark body {
+  background-color: #17150f;
+  color: #f2efe8;
+}
+
+@layer base {
+  html.dark {
+    --tw-prose-body: #e9e5dc;
+  }
+}
+
+/* พื้นที่ปลอดภัยของมือถือ (notch/home indicator) */
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* แถบเลื่อนอ่านที่ไม่รบกวนสายตา */
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background-color: rgba(28, 26, 23, 0.2);
+  border-radius: 999px;
+}
+html.dark ::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-full bg-ink px-6 py-3.5 text-base font-medium text-paper transition active:scale-[0.98] dark:bg-paper dark:text-ink;
+  }
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-full border border-ink/15 bg-paper-raised px-6 py-3.5 text-base font-medium text-ink transition active:scale-[0.98] dark:border-white/15 dark:bg-white/5 dark:text-paper;
+  }
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-medium text-ink/70 transition hover:text-ink dark:text-paper/60 dark:hover:text-paper;
+  }
+  .card {
+    @apply rounded-xl2 border border-ink/10 bg-paper-raised shadow-sm dark:border-white/10 dark:bg-white/[0.04];
+  }
+}
