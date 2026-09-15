@@ -7,12 +7,21 @@ import { LessonCard } from '@/components/LessonCard';
 import { useUserStore } from '@/store/useUserStore';
 import { ALL_LESSONS, getLesson } from '@/content';
 import { MAX_REROLLS_PER_DAY } from '@/lib/dailyPicker';
+import { nextUnseenMilestone } from '@/lib/streak';
+
+const MILESTONE_LABEL: Record<number, string> = {
+  7: 'ครบ 1 สัปดาห์ติดกันแล้ว 🎉',
+  30: 'ครบ 30 วันติดกัน สุดยอดมาก 🔥',
+  100: '100 วันติดกัน! ระดับตำนาน 🏆',
+};
 
 export function Today() {
   const dailyPick = useUserStore((s) => s.dailyPick);
   const ensureDailyPick = useUserStore((s) => s.ensureDailyPick);
   const rerollDailyPick = useUserStore((s) => s.rerollDailyPick);
   const lessons = useUserStore((s) => s.lessons);
+  const streak = useUserStore((s) => s.streak);
+  const acknowledgeMilestone = useUserStore((s) => s.acknowledgeMilestone);
 
   useEffect(() => {
     ensureDailyPick();
@@ -23,9 +32,23 @@ export function Today() {
 
   const doneCount = Object.values(lessons).filter((p) => p.status === 'done').length;
   const otherLessons = ALL_LESSONS.filter((l) => l.id !== todayLesson?.id);
+  const milestone = nextUnseenMilestone(streak);
 
   return (
     <Layout>
+      {milestone !== null && (
+        <section className="mb-6 flex items-center justify-between gap-3 rounded-xl2 bg-cat-growth/15 p-4 text-cat-growth">
+          <p className="text-sm font-semibold">{MILESTONE_LABEL[milestone]}</p>
+          <button
+            type="button"
+            onClick={() => acknowledgeMilestone(milestone)}
+            className="shrink-0 text-xs font-medium underline decoration-dotted underline-offset-2"
+          >
+            ปิด
+          </button>
+        </section>
+      )}
+
       <section className="mb-8">
         <p className="mb-1 text-sm text-ink/50 dark:text-paper/50">วันนี้เรียนอะไรดี</p>
         <h1 className="text-2xl font-bold tracking-tight">เลือกมาให้แล้ว อ่านจบใน 10 นาที</h1>

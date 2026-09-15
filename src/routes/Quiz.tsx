@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import { Layout } from '@/components/Layout';
 import { ProgressBar } from '@/components/ProgressBar';
@@ -18,11 +18,27 @@ export function Quiz() {
   const navigate = useNavigate();
   const lesson = getLesson(id);
   const submitQuizAttempt = useUserStore((s) => s.submitQuizAttempt);
+  const recordQuizQuestionSet = useUserStore((s) => s.recordQuizQuestionSet);
 
-  const [questions] = useState(() => (lesson ? pickQuizQuestions(lesson.questions) : []));
+  const [questions] = useState(() => {
+    if (!lesson) return [];
+    const lastIds = useUserStore.getState().lessons[lesson.id]?.lastQuizQuestionIds;
+    return pickQuizQuestions(lesson.questions, undefined, lastIds);
+  });
   const [index, setIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [revealed, setRevealed] = useState(false);
+
+  useEffect(() => {
+    if (lesson && questions.length > 0) {
+      recordQuizQuestionSet(
+        lesson.id,
+        questions.map((q) => q.id),
+      );
+    }
+    // เก็บชุดคำถามของรอบนี้ไว้ครั้งเดียวตอนเข้าหน้า ไม่ต้องรันซ้ำ
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (!lesson) return <Navigate to="/" replace />;
   if (questions.length === 0) {

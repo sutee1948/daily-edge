@@ -13,6 +13,8 @@ export interface LessonProgress {
   attempts: QuizAttempt[];
   bookmarked: boolean;
   note?: string;
+  /** ชุดคำถามรอบล่าสุดที่เคยออก — ใช้กันไม่ให้ "ทำข้อสอบใหม่" ออกชุดเดิมซ้ำ */
+  lastQuizQuestionIds?: string[];
 }
 
 export interface StreakState {
@@ -20,12 +22,22 @@ export interface StreakState {
   best: number;
   lastStudyDate: string | null;
   freezesLeft: number;
+  /** milestone (วัน) ที่เคยแสดงฉลองไปแล้ว กันไม่ให้เด้งซ้ำ */
+  milestonesSeen: number[];
 }
 
 export interface DailyPickState {
   date: string;
   lessonId: string;
   rerollsUsed: number;
+  /** บทที่เคยแสดงให้ดูแล้ววันนี้ (รวมที่ถูกเปลี่ยนออกไป) กันไม่ให้เปลี่ยนเรื่องแล้ววนกลับมาซ้ำ */
+  shownIds: string[];
+}
+
+/** บันทึกว่าวันไหนได้บทอะไรไปเรียน — ใช้ให้อัลกอริทึมวันถัดไปเลี่ยงหมวด/รูปแบบซ้ำ */
+export interface PickHistoryEntry {
+  date: string;
+  lessonId: string;
 }
 
 export interface UserSettings {
@@ -38,5 +50,7 @@ export interface UserState {
   streak: StreakState;
   lessons: Record<string, LessonProgress>;
   dailyPick: DailyPickState | null;
+  /** ประวัติบทที่ถูกเลือกเป็น "บทของวัน" ล่าสุด (เก็บย้อนหลังไม่กี่รายการ) */
+  pickHistory: PickHistoryEntry[];
   settings: UserSettings;
 }

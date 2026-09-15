@@ -17,3 +17,10 @@ export function diffDaysISO(a: string, b: string): number {
   const msPerDay = 24 * 60 * 60 * 1000;
   return Math.round((db.getTime() - da.getTime()) / msPerDay);
 }
+
+/** ขยับ ISO date ไป delta วัน (ลบได้) คืนค่าเป็น ISO date ใหม่ */
+export function shiftISO(dateISO: string, deltaDays: number): string {
+  const d = new Date(`${dateISO}T00:00:00`);
+  d.setDate(d.getDate() + deltaDays);
+  return toISO(d);
+}

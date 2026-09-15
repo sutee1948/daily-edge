@@ -2,8 +2,9 @@ import { Link, Navigate, useNavigate, useParams } from 'react-router-dom';
 import { Layout } from '@/components/Layout';
 import { ScoreRing } from '@/components/ScoreRing';
 import { LessonCard } from '@/components/LessonCard';
-import { getLesson, getRelatedLessons } from '@/content';
+import { getLesson, ALL_LESSONS } from '@/content';
 import { useUserStore } from '@/store/useUserStore';
+import { recommendLessons } from '@/lib/recommend';
 
 function bandOf(score: number, total: number): 'mastered' | 'passed' | 'shaky' {
   if (total === 0) return 'shaky';
@@ -22,6 +23,7 @@ export function Result() {
   const navigate = useNavigate();
   const lesson = getLesson(id);
   const progress = useUserStore((s) => s.lessons[id]);
+  const allProgress = useUserStore((s) => s.lessons);
   const finishToday = useUserStore((s) => s.finishToday);
 
   if (!lesson) return <Navigate to="/" replace />;
@@ -32,7 +34,7 @@ export function Result() {
   const band = bandOf(attempt.score, attempt.total);
   const wrongQuestions = lesson.questions.filter((q) => attempt.wrongQIds.includes(q.id));
   const firstWrongBeat = wrongQuestions.find((q) => q.targetBeat !== undefined)?.targetBeat;
-  const related = getRelatedLessons(lesson.id, 3);
+  const related = recommendLessons(lesson.id, ALL_LESSONS, allProgress, 3);
 
   function handleFinishToday() {
     finishToday();
@@ -82,7 +84,7 @@ export function Result() {
           <h2 className="mb-3 text-lg font-semibold">สนใจเรียนต่อไหม</h2>
           <div className="grid gap-3">
             {related.map((r) => (
-              <LessonCard key={r.id} lesson={r} reason={`เกี่ยวข้องกับ "${lesson.title}"`} />
+              <LessonCard key={r.lesson.id} lesson={r.lesson} reason={r.reason} />
             ))}
           </div>
         </section>

@@ -17,32 +17,3 @@ export const LESSON_MAP: Record<string, Lesson> = Object.fromEntries(
 export function getLesson(id: string): Lesson | undefined {
   return LESSON_MAP[id];
 }
-
-/** บทที่เกี่ยวข้อง — ใช้ relatedIds ก่อน แล้วเติมด้วยบทอื่นที่มีอยู่จริงถ้าไม่ครบ 3
- *  (อัลกอริทึมคะแนนเต็มรูปแบบตาม PLAN.md ข้อ 6 จะสร้างใน Phase 2) */
-export function getRelatedLessons(lessonId: string, count = 3): Lesson[] {
-  const lesson = getLesson(lessonId);
-  if (!lesson) return [];
-
-  const related: Lesson[] = [];
-  const seen = new Set<string>([lessonId]);
-
-  for (const id of lesson.relatedIds) {
-    const found = LESSON_MAP[id];
-    if (found && !seen.has(id)) {
-      related.push(found);
-      seen.add(id);
-    }
-  }
-
-  if (related.length < count) {
-    for (const other of ALL_LESSONS) {
-      if (related.length >= count) break;
-      if (seen.has(other.id)) continue;
-      related.push(other);
-      seen.add(other.id);
-    }
-  }
-
-  return related.slice(0, count);
-}
