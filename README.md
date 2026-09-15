@@ -21,7 +21,7 @@ npm run preview    # ดูผล build
 npm run typecheck  # เช็ก TypeScript อย่างเดียว
 ```
 
-## สถานะปัจจุบัน (Phase 1)
+## สถานะปัจจุบัน (Phase 1–2)
 
 - โครงแอป Vite + React + TypeScript + Tailwind + React Router + Zustand
 - Flow ครบวง: วันนี้เรียนอะไร → อ่านบท → ทำควิซ → ดูผล → ทำใหม่/เรียนซ้ำ/เรื่องเกี่ยวข้อง
@@ -29,6 +29,10 @@ npm run typecheck  # เช็ก TypeScript อย่างเดียว
   - `a01` "ชนะโดยไม่ต้องรบ" — ซุนวู (กลยุทธ์จีน, STORY)
   - `c01` Psychological Safety — Project Aristotle (บริหารคน, CLASSIC)
   - `e01` Testing Effect — อ่านซ้ำ vs ทดสอบตัวเอง (สมอง, MYTH-BUST)
-- ข้อมูลผู้ใช้เก็บใน localStorage ของเบราว์เซอร์ (ยังไม่มี backend)
+- อัลกอริทึม "บทของวันนี้" เลี่ยงหมวด/รูปแบบซ้ำกับ 1-2 วันก่อน + ปรับความยากตาม progress ([src/lib/dailyPicker.ts](./src/lib/dailyPicker.ts))
+- Streak + Freeze (เว้นได้ 2 ครั้ง/เดือนไม่เสีย streak) + แบนเนอร์ฉลอง milestone 7/30/100 วัน ([src/lib/streak.ts](./src/lib/streak.ts))
+- ระบบแนะนำหัวข้อเกี่ยวข้องแบบให้คะแนนพร้อมเหตุผลต่อการ์ด ([src/lib/recommend.ts](./src/lib/recommend.ts))
+- "ทำข้อสอบใหม่" การันตีว่าไม่ออกชุดคำถามซ้ำรอบก่อนหน้า
+- ข้อมูลผู้ใช้เก็บใน localStorage ของเบราว์เซอร์ (ยังไม่มี backend) พร้อม versioning/migrate
 
-ฟีเจอร์ที่เหลือ (อัลกอริทึมแนะนำเต็มรูปแบบ, spaced repetition, คลังบท/ค้นหา, PWA ฯลฯ) อยู่ใน Phase 2 เป็นต้นไป ตาม [PLAN.md](./PLAN.md#11-แผนงานรายเฟส-ขออนุมัติทีละเฟส)
+ฟีเจอร์ที่เหลือ (spaced repetition, คลังบท/ค้นหา, PWA ฯลฯ) อยู่ใน Phase 3 เป็นต้นไป ตาม [PLAN.md](./PLAN.md#11-แผนงานรายเฟส-ขออนุมัติทีละเฟส)
