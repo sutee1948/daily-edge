@@ -43,7 +43,7 @@ export const a01: LessonSource = {
 
   keyTakeaway: 'ชัยชนะที่ดีที่สุดคือชัยชนะที่ไม่มีใครเห็นสมรภูมิเลย',
 
-  relatedIds: ['c01-psychological-safety-project-aristotle', 'e01-testing-effect-myth', 'a05-han-feizi-power-of-position'],
+  relatedIds: ['a05-han-feizi-power-of-position', 'c01-psychological-safety-project-aristotle', 'b03-lie-detection-myth'],
 
   questions: [
     {

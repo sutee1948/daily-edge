@@ -6,9 +6,10 @@
   "description": "DAILY EDGE — เรียนรู้วันละ 10 นาที: กลยุทธ์จีน จิตวิทยา การอ่านคน การบริหารคน ความสัมพันธ์ สมอง การพัฒนาตนเอง และอาชีพโปรแกรมเมอร์",
   "scripts": {
     "dev": "vite",
-    "build": "tsc --noEmit && vite build",
+    "build": "npm run validate-content && tsc --noEmit && vite build",
     "preview": "vite preview",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "validate-content": "tsx scripts/validate-content.ts"
   },
   "dependencies": {
     "react": "^18.3.1",

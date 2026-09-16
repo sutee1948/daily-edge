@@ -44,7 +44,7 @@ export const e01: LessonSource = {
 
   keyTakeaway: 'ความรู้สึก "คุ้นเคย" ตอนอ่านซ้ำหลอกได้ — การบังคับตัวเองดึงความจำออกมาต่างหากที่ทำให้จำได้จริง',
 
-  relatedIds: ['c01-psychological-safety-project-aristotle', 'a01-sunzi-win-without-fighting', 'e02-sleep-memory-consolidation'],
+  relatedIds: ['e02-sleep-memory-consolidation', 'c01-psychological-safety-project-aristotle', 'f01-deliberate-practice-myth'],
 
   questions: [
     {
