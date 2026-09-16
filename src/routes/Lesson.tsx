@@ -12,6 +12,8 @@ export function Lesson() {
   const [searchParams] = useSearchParams();
   const lesson = getLesson(id);
   const markLessonStarted = useUserStore((s) => s.markLessonStarted);
+  const bookmarked = useUserStore((s) => (lesson ? s.lessons[lesson.id]?.bookmarked ?? false : false));
+  const toggleBookmark = useUserStore((s) => s.toggleBookmark);
   const [scrollPct, setScrollPct] = useState(0);
   const articleRef = useRef<HTMLDivElement>(null);
   const beatRefs = useRef<Array<HTMLElement | null>>([]);
@@ -58,6 +60,15 @@ export function Lesson() {
           <CategoryBadge category={lesson.category} />
           <FormatBadge format={lesson.format} />
           <span className="text-sm text-ink/50 dark:text-paper/50">⏱ ~{lesson.estimatedMinutes} นาที</span>
+          <button
+            type="button"
+            onClick={() => toggleBookmark(lesson.id)}
+            className="ml-auto text-xl"
+            aria-label={bookmarked ? 'เลิกบันทึก' : 'บันทึกบทนี้'}
+            title={bookmarked ? 'เลิกบันทึก' : 'บันทึกบทนี้'}
+          >
+            {bookmarked ? '🔖' : '📑'}
+          </button>
         </div>
 
         <h1 className="mb-2 text-2xl font-bold leading-snug">{lesson.title}</h1>

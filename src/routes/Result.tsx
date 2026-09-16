@@ -47,6 +47,9 @@ export function Result() {
         <ScoreRing score={attempt.score} total={attempt.total} />
         <p className={`mt-4 text-lg font-semibold ${BAND_META[band].tone}`}>{BAND_META[band].label}</p>
         <p className="mt-1 text-sm text-ink/55 dark:text-paper/55">{lesson.title}</p>
+        {attempt.wrongQIds.length > 0 && (
+          <p className="mt-2 text-xs text-ink/45 dark:text-paper/45">🔁 พรุ่งนี้ระบบจะพาบทนี้กลับมาทบทวนสั้นๆ ให้อัตโนมัติ</p>
+        )}
       </section>
 
       {wrongQuestions.length > 0 && (

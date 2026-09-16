@@ -1,8 +1,17 @@
 import { Link } from 'react-router-dom';
 import type { ReactNode } from 'react';
 import { StreakBadge } from '@/components/StreakBadge';
+import { BottomNav } from '@/components/BottomNav';
 
-export function Layout({ children, hideHeader = false }: { children: ReactNode; hideHeader?: boolean }) {
+export function Layout({
+  children,
+  hideHeader = false,
+  hideNav = false,
+}: {
+  children: ReactNode;
+  hideHeader?: boolean;
+  hideNav?: boolean;
+}) {
   return (
     <div className="min-h-dvh bg-paper text-ink dark:bg-[#17150f] dark:text-paper">
       {!hideHeader && (
@@ -15,7 +24,8 @@ export function Layout({ children, hideHeader = false }: { children: ReactNode; 
           </div>
         </header>
       )}
-      <main className="mx-auto max-w-2xl px-4 pb-16 pt-6 safe-bottom">{children}</main>
+      <main className={`mx-auto max-w-2xl px-4 pt-6 safe-bottom ${hideNav ? 'pb-16' : 'pb-24'}`}>{children}</main>
+      {!hideNav && <BottomNav />}
     </div>
   );
 }

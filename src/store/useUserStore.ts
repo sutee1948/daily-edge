@@ -5,9 +5,10 @@ import type { QuizResult } from '@/lib/quiz';
 import { todayISO } from '@/lib/date';
 import { pickTodayLesson, MAX_REROLLS_PER_DAY } from '@/lib/dailyPicker';
 import { bumpStreak, initialStreak } from '@/lib/streak';
+import { upsertReviewOnMainQuiz, advanceReview } from '@/lib/srs';
 
 const STORAGE_KEY = 'daily-edge:user-state:v1';
-const CURRENT_VERSION = 2;
+const CURRENT_VERSION = 3;
 const PICK_HISTORY_LIMIT = 14;
 
 function emptyProgress(): LessonProgress {
@@ -21,6 +22,7 @@ function initialState(): UserState {
     lessons: {},
     dailyPick: null,
     pickHistory: [],
+    reviewQueue: [],
     settings: { theme: 'system', fontScale: 1 },
   };
 }
@@ -34,13 +36,33 @@ interface UserActions {
   /** บันทึกชุดคำถามของรอบปัจจุบัน — ใช้กันไม่ให้ "ทำข้อสอบใหม่" ออกชุดเดิมซ้ำ */
   recordQuizQuestionSet: (lessonId: string, questionIds: string[]) => void;
   submitQuizAttempt: (lessonId: string, result: QuizResult) => void;
+  /** ส่งผลควิซทบทวน (2 ข้อ) — ไม่นับ streak ไม่เปลี่ยนสถานะบท แค่เลื่อน/รีเซ็ตคิวทบทวน */
+  submitReviewAttempt: (lessonId: string, result: QuizResult) => void;
   toggleBookmark: (lessonId: string) => void;
   setNote: (lessonId: string, note: string) => void;
+  updateSettings: (partial: Partial<UserState['settings']>) => void;
   /** จบเซสชันวันนี้ด้วยตัวเอง (ปุ่ม "พอแค่นี้วันนี้") — บันทึก streak ถ้ายังไม่ได้บันทึก */
   finishToday: () => void;
   /** ปิดแบนเนอร์ฉลอง milestone (7/30/100 วัน) กันไม่ให้เด้งซ้ำ */
   acknowledgeMilestone: (milestone: number) => void;
+  /** คืนข้อมูลผู้ใช้ล้วนๆ (ไม่รวม action) สำหรับ export เป็นไฟล์ */
+  exportState: () => UserState;
+  /** แทนที่ข้อมูลผู้ใช้ทั้งหมดด้วยข้อมูลที่ import เข้ามา คืนค่า true ถ้าสำเร็จ */
+  importState: (data: unknown) => boolean;
   resetAll: () => void;
+}
+
+function isValidUserState(data: unknown): data is UserState {
+  if (!data || typeof data !== 'object') return false;
+  const d = data as Record<string, unknown>;
+  return (
+    typeof d.version === 'number' &&
+    typeof d.streak === 'object' &&
+    typeof d.lessons === 'object' &&
+    Array.isArray(d.pickHistory) &&
+    Array.isArray(d.reviewQueue) &&
+    typeof d.settings === 'object'
+  );
 }
 
 export const useUserStore = create<UserState & UserActions>()(
@@ -106,18 +128,32 @@ export const useUserStore = create<UserState & UserActions>()(
 
       submitQuizAttempt: (lessonId, result) => {
         set((state) => {
+          const today = todayISO();
           const prev = state.lessons[lessonId] ?? emptyProgress();
-          const attempt = { date: todayISO(), score: result.score, total: result.total, wrongQIds: result.wrongQIds };
+          const attempt = { date: today, score: result.score, total: result.total, wrongQIds: result.wrongQIds, source: 'main' as const };
           const passed = result.band !== 'shaky';
           const nextProgress: LessonProgress = {
             ...prev,
             status: passed ? 'done' : prev.status === 'done' ? 'done' : 'reading',
-            completedAt: passed ? prev.completedAt ?? todayISO() : prev.completedAt,
+            completedAt: passed ? prev.completedAt ?? today : prev.completedAt,
             attempts: [...prev.attempts, attempt],
           };
           return {
             lessons: { ...state.lessons, [lessonId]: nextProgress },
-            streak: bumpStreak(state.streak, todayISO()),
+            streak: bumpStreak(state.streak, today),
+            reviewQueue: upsertReviewOnMainQuiz(state.reviewQueue, lessonId, today, result.wrongQIds.length > 0),
+          };
+        });
+      },
+
+      submitReviewAttempt: (lessonId, result) => {
+        set((state) => {
+          const today = todayISO();
+          const prev = state.lessons[lessonId] ?? emptyProgress();
+          const attempt = { date: today, score: result.score, total: result.total, wrongQIds: result.wrongQIds, source: 'review' as const };
+          return {
+            lessons: { ...state.lessons, [lessonId]: { ...prev, attempts: [...prev.attempts, attempt] } },
+            reviewQueue: advanceReview(state.reviewQueue, lessonId, today, result.score === result.total),
           };
         });
       },
@@ -140,10 +176,26 @@ export const useUserStore = create<UserState & UserActions>()(
         set((state) => ({ streak: bumpStreak(state.streak, todayISO()) }));
       },
 
+      updateSettings: (partial) => {
+        set((state) => ({ settings: { ...state.settings, ...partial } }));
+      },
+
       acknowledgeMilestone: (milestone) => {
         set((state) => ({
           streak: { ...state.streak, milestonesSeen: [...state.streak.milestonesSeen, milestone] },
         }));
+      },
+
+      exportState: () => {
+        // หยิบเฉพาะฟิลด์ข้อมูล (ไม่รวม action) แบบเจาะจง กัน export หลุดฟังก์ชันติดไปโดยไม่ตั้งใจ
+        const { version, streak, lessons, dailyPick, pickHistory, reviewQueue, settings } = get();
+        return { version, streak, lessons, dailyPick, pickHistory, reviewQueue, settings };
+      },
+
+      importState: (data) => {
+        if (!isValidUserState(data)) return false;
+        set({ ...data, version: CURRENT_VERSION });
+        return true;
       },
 
       resetAll: () => set(initialState()),
@@ -163,6 +215,9 @@ export const useUserStore = create<UserState & UserActions>()(
           if (persisted.dailyPick && !('shownIds' in persisted.dailyPick)) {
             persisted.dailyPick = { ...persisted.dailyPick, shownIds: [persisted.dailyPick.lessonId] };
           }
+        }
+        if (version < 3) {
+          persisted.reviewQueue = persisted.reviewQueue ?? [];
         }
         return persisted as UserState;
       },

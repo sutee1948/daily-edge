@@ -3,11 +3,12 @@ import { Link } from 'react-router-dom';
 import { Layout } from '@/components/Layout';
 import { CategoryBadge } from '@/components/CategoryBadge';
 import { FormatBadge } from '@/components/FormatBadge';
-import { LessonCard } from '@/components/LessonCard';
 import { useUserStore } from '@/store/useUserStore';
 import { ALL_LESSONS, getLesson } from '@/content';
 import { MAX_REROLLS_PER_DAY } from '@/lib/dailyPicker';
 import { nextUnseenMilestone } from '@/lib/streak';
+import { getDueReviews } from '@/lib/srs';
+import { todayISO } from '@/lib/date';
 
 const MILESTONE_LABEL: Record<number, string> = {
   7: 'ครบ 1 สัปดาห์ติดกันแล้ว 🎉',
@@ -22,6 +23,7 @@ export function Today() {
   const lessons = useUserStore((s) => s.lessons);
   const streak = useUserStore((s) => s.streak);
   const acknowledgeMilestone = useUserStore((s) => s.acknowledgeMilestone);
+  const reviewQueue = useUserStore((s) => s.reviewQueue);
 
   useEffect(() => {
     ensureDailyPick();
@@ -31,8 +33,10 @@ export function Today() {
   const rerollsLeft = MAX_REROLLS_PER_DAY - (dailyPick?.rerollsUsed ?? 0);
 
   const doneCount = Object.values(lessons).filter((p) => p.status === 'done').length;
-  const otherLessons = ALL_LESSONS.filter((l) => l.id !== todayLesson?.id);
   const milestone = nextUnseenMilestone(streak);
+  const dueReviews = getDueReviews(reviewQueue, todayISO())
+    .map((e) => getLesson(e.lessonId))
+    .filter((l): l is NonNullable<typeof l> => !!l);
 
   return (
     <Layout>
@@ -46,6 +50,29 @@ export function Today() {
           >
             ปิด
           </button>
+        </section>
+      )}
+
+      {dueReviews.length > 0 && (
+        <section className="mb-6">
+          <h2 className="mb-3 flex items-center gap-1.5 text-sm font-semibold text-ink/70 dark:text-paper/70">
+            🔁 ถึงเวลาทบทวนแล้ว ({dueReviews.length})
+          </h2>
+          <div className="space-y-2">
+            {dueReviews.map((lesson) => (
+              <Link
+                key={lesson.id}
+                to={`/lesson/${lesson.id}/review`}
+                className="card flex items-center justify-between gap-3 p-4 transition hover:border-ink/25 dark:hover:border-white/25"
+              >
+                <div>
+                  <p className="text-sm font-medium leading-snug">{lesson.title}</p>
+                  <p className="text-xs text-ink/50 dark:text-paper/50">ทบทวน 2 ข้อ · ~2 นาที</p>
+                </div>
+                <span className="btn-secondary shrink-0 !px-4 !py-2 text-sm">ทบทวน</span>
+              </Link>
+            ))}
+          </div>
         </section>
       )}
 
@@ -101,16 +128,13 @@ export function Today() {
         </div>
       </section>
 
-      {otherLessons.length > 0 && (
-        <section>
-          <h2 className="mb-3 text-lg font-semibold">หัวข้ออื่นที่มีตอนนี้</h2>
-          <div className="grid gap-3">
-            {otherLessons.map((lesson) => (
-              <LessonCard key={lesson.id} lesson={lesson} />
-            ))}
-          </div>
-        </section>
-      )}
+      <Link
+        to="/library"
+        className="card flex items-center justify-between p-4 text-sm font-medium transition hover:border-ink/25 dark:hover:border-white/25"
+      >
+        📚 ดูคลังบททั้งหมด ({ALL_LESSONS.length} บท)
+        <span aria-hidden>→</span>
+      </Link>
     </Layout>
   );
 }

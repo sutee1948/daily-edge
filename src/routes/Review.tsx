@@ -1,50 +1,30 @@
-import { useEffect, useState } from 'react';
-import { Navigate, useNavigate, useParams } from 'react-router-dom';
+import { useState } from 'react';
+import { Link, Navigate, useParams } from 'react-router-dom';
 import { Layout } from '@/components/Layout';
 import { ProgressBar } from '@/components/ProgressBar';
 import { getLesson } from '@/content';
 import { pickQuizQuestions, scoreQuiz } from '@/lib/quiz';
 import { useUserStore } from '@/store/useUserStore';
 
-const TYPE_LABEL: Record<string, string> = {
-  mcq: 'เลือกตอบ',
-  scenario: 'สถานการณ์',
-  'true-false-why': 'ถูก/ผิด + เหตุผล',
-  'odd-one-out': 'หาตัวที่ไม่เข้าพวก',
-};
+const REVIEW_QUESTIONS = 2;
 
-export function Quiz() {
+export function Review() {
   const { id = '' } = useParams();
-  const navigate = useNavigate();
   const lesson = getLesson(id);
-  const submitQuizAttempt = useUserStore((s) => s.submitQuizAttempt);
-  const recordQuizQuestionSet = useUserStore((s) => s.recordQuizQuestionSet);
+  const submitReviewAttempt = useUserStore((s) => s.submitReviewAttempt);
 
-  const [questions] = useState(() => {
-    if (!lesson) return [];
-    const lastIds = useUserStore.getState().lessons[lesson.id]?.lastQuizQuestionIds;
-    return pickQuizQuestions(lesson.questions, undefined, lastIds);
-  });
+  const [questions] = useState(() => (lesson ? pickQuizQuestions(lesson.questions, REVIEW_QUESTIONS) : []));
   const [index, setIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [revealed, setRevealed] = useState(false);
-
-  useEffect(() => {
-    if (lesson && questions.length > 0) {
-      recordQuizQuestionSet(
-        lesson.id,
-        questions.map((q) => q.id),
-      );
-    }
-    // เก็บชุดคำถามของรอบนี้ไว้ครั้งเดียวตอนเข้าหน้า ไม่ต้องรันซ้ำ
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const [done, setDone] = useState(false);
+  const [result, setResult] = useState<{ score: number; total: number } | null>(null);
 
   if (!lesson) return <Navigate to="/" replace />;
   if (questions.length === 0) {
     return (
       <Layout hideNav>
-        <p className="text-ink/60 dark:text-paper/60">บทนี้ยังไม่มีคำถาม</p>
+        <p className="text-ink/60 dark:text-paper/60">บทนี้ยังไม่มีคำถามสำหรับทบทวน</p>
       </Layout>
     );
   }
@@ -61,23 +41,49 @@ export function Quiz() {
 
   function next() {
     if (isLast) {
-      const result = scoreQuiz(questions, answers);
-      submitQuizAttempt(lesson!.id, result);
-      navigate(`/lesson/${lesson!.id}/result`);
+      const finalAnswers = answers;
+      const scored = scoreQuiz(questions, finalAnswers);
+      submitReviewAttempt(lesson!.id, scored);
+      setResult({ score: scored.score, total: scored.total });
+      setDone(true);
       return;
     }
     setIndex((i) => i + 1);
     setRevealed(false);
   }
 
+  if (done && result) {
+    const perfect = result.score === result.total;
+    return (
+      <Layout hideNav>
+        <div className="flex flex-col items-center gap-4 py-12 text-center">
+          <p className="text-5xl">{perfect ? '✅' : '🔁'}</p>
+          <h1 className="text-xl font-semibold">
+            ทบทวนแล้ว {result.score}/{result.total}
+          </h1>
+          <p className="max-w-xs text-sm text-ink/60 dark:text-paper/60">
+            {perfect
+              ? 'เยี่ยมมาก! เลื่อนรอบทบทวนถัดไปให้ห่างขึ้นแล้ว'
+              : 'ยังไม่แน่นพอ พรุ่งนี้ระบบจะพาบทนี้กลับมาทบทวนอีกครั้ง'}
+          </p>
+          <Link to="/" className="btn-primary">
+            กลับหน้าหลัก
+          </Link>
+        </div>
+      </Layout>
+    );
+  }
+
   return (
     <Layout hideNav>
       <div className="mb-6">
+        <p className="mb-2 text-sm text-ink/50 dark:text-paper/50">
+          🔁 ทบทวน · {lesson.title}
+        </p>
         <div className="mb-2 flex items-center justify-between text-sm text-ink/50 dark:text-paper/50">
           <span>
             ข้อ {index + 1} / {questions.length}
           </span>
-          <span>{TYPE_LABEL[q.type]}</span>
         </div>
         <ProgressBar value={((index + (revealed ? 1 : 0)) / questions.length) * 100} />
       </div>
@@ -112,9 +118,7 @@ export function Quiz() {
                 {showState && isCorrect && <span className="shrink-0 text-cat-brain">✓</span>}
                 {showState && isSelected && !isCorrect && <span className="shrink-0 text-cat-china">✕</span>}
               </div>
-              {showState && (
-                <p className="mt-2 text-sm leading-relaxed text-ink/60 dark:text-paper/60">{opt.explain}</p>
-              )}
+              {showState && <p className="mt-2 text-sm leading-relaxed text-ink/60 dark:text-paper/60">{opt.explain}</p>}
             </button>
           );
         })}
@@ -123,7 +127,7 @@ export function Quiz() {
       {revealed && (
         <div className="mt-6 flex justify-end">
           <button type="button" onClick={next} className="btn-primary">
-            {isLast ? 'ดูผลสรุป →' : 'ข้อถัดไป →'}
+            {isLast ? 'เสร็จแล้ว →' : 'ข้อถัดไป →'}
           </button>
         </div>
       )}

@@ -4,6 +4,11 @@ import { Today } from '@/routes/Today';
 import { Lesson } from '@/routes/Lesson';
 import { Quiz } from '@/routes/Quiz';
 import { Result } from '@/routes/Result';
+import { Review } from '@/routes/Review';
+import { Library } from '@/routes/Library';
+import { Bookmarks } from '@/routes/Bookmarks';
+import { Progress } from '@/routes/Progress';
+import { Settings } from '@/routes/Settings';
 import { NotFound } from '@/routes/NotFound';
 import { useUserStore } from '@/store/useUserStore';
 
@@ -47,6 +52,11 @@ export function App() {
         <Route path="/lesson/:id" element={<Lesson />} />
         <Route path="/lesson/:id/quiz" element={<Quiz />} />
         <Route path="/lesson/:id/result" element={<Result />} />
+        <Route path="/lesson/:id/review" element={<Review />} />
+        <Route path="/library" element={<Library />} />
+        <Route path="/bookmarks" element={<Bookmarks />} />
+        <Route path="/progress" element={<Progress />} />
+        <Route path="/settings" element={<Settings />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </HashRouter>
