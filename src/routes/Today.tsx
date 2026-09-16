@@ -67,7 +67,7 @@ export function Today() {
               >
                 <div>
                   <p className="text-sm font-medium leading-snug">{lesson.title}</p>
-                  <p className="text-xs text-ink/50 dark:text-paper/50">ทบทวน 2 ข้อ · ~2 นาที</p>
+                  <p className="text-xs text-ink/65 dark:text-paper/65">ทบทวน 2 ข้อ · ~2 นาที</p>
                 </div>
                 <span className="btn-secondary shrink-0 !px-4 !py-2 text-sm">ทบทวน</span>
               </Link>
@@ -77,7 +77,7 @@ export function Today() {
       )}
 
       <section className="mb-8">
-        <p className="mb-1 text-sm text-ink/50 dark:text-paper/50">วันนี้เรียนอะไรดี</p>
+        <p className="mb-1 text-sm text-ink/65 dark:text-paper/65">วันนี้เรียนอะไรดี</p>
         <h1 className="text-2xl font-bold tracking-tight">เลือกมาให้แล้ว อ่านจบใน 10 นาที</h1>
       </section>
 
@@ -90,10 +90,10 @@ export function Today() {
             </div>
             <div>
               <h2 className="text-xl font-bold leading-snug">{todayLesson.title}</h2>
-              <p className="mt-1 text-ink/60 dark:text-paper/60">{todayLesson.subtitle}</p>
+              <p className="mt-1 text-ink/65 dark:text-paper/65">{todayLesson.subtitle}</p>
             </div>
             <p className="text-sm leading-relaxed text-ink/70 dark:text-paper/70">{todayLesson.hook}</p>
-            <div className="flex items-center gap-3 text-sm text-ink/50 dark:text-paper/50">
+            <div className="flex items-center gap-3 text-sm text-ink/65 dark:text-paper/65">
               <span>⏱ ประมาณ {todayLesson.estimatedMinutes} นาที</span>
               <span>·</span>
               <span>{todayLesson.wordCount} คำ</span>
@@ -114,17 +114,17 @@ export function Today() {
           </div>
         </section>
       ) : (
-        <p className="text-ink/60 dark:text-paper/60">ยังไม่มีบทเรียนในระบบ</p>
+        <p className="text-ink/65 dark:text-paper/65">ยังไม่มีบทเรียนในระบบ</p>
       )}
 
       <section className="mb-8 grid grid-cols-2 gap-3">
         <div className="card p-4">
           <p className="text-2xl font-bold">{doneCount}</p>
-          <p className="text-sm text-ink/50 dark:text-paper/50">บทที่เรียนจบแล้ว</p>
+          <p className="text-sm text-ink/65 dark:text-paper/65">บทที่เรียนจบแล้ว</p>
         </div>
         <div className="card p-4">
           <p className="text-2xl font-bold">{ALL_LESSONS.length}</p>
-          <p className="text-sm text-ink/50 dark:text-paper/50">บทที่มีในตอนนี้</p>
+          <p className="text-sm text-ink/65 dark:text-paper/65">บทที่มีในตอนนี้</p>
         </div>
       </section>
 

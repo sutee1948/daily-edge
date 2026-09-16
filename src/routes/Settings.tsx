@@ -8,6 +8,13 @@ const THEME_OPTIONS = [
   { value: 'system', label: '💻 ตามระบบ' },
 ] as const;
 
+const FONT_SCALE_OPTIONS = [
+  { value: 0.9, label: 'เล็ก' },
+  { value: 1, label: 'ปกติ' },
+  { value: 1.1, label: 'ใหญ่' },
+  { value: 1.25, label: 'ใหญ่มาก' },
+] as const;
+
 export function Settings() {
   const settings = useUserStore((s) => s.settings);
   const updateSettings = useUserStore((s) => s.updateSettings);
@@ -90,8 +97,29 @@ export function Settings() {
       </section>
 
       <section className="card mb-6 p-4">
+        <h2 className="mb-3 text-sm font-semibold text-ink/70 dark:text-paper/70">ขนาดตัวอักษร</h2>
+        <div className="flex gap-2">
+          {FONT_SCALE_OPTIONS.map((opt) => (
+            <button
+              key={opt.value}
+              type="button"
+              onClick={() => updateSettings({ fontScale: opt.value })}
+              className={`flex-1 rounded-xl2 border px-3 py-2.5 text-sm transition ${
+                settings.fontScale === opt.value
+                  ? 'border-edge bg-edge/10 text-edge'
+                  : 'border-ink/12 text-ink/70 dark:border-white/12 dark:text-paper/70'
+              }`}
+              style={{ fontSize: `${opt.value}em` }}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
+      </section>
+
+      <section className="card mb-6 p-4">
         <h2 className="mb-1 text-sm font-semibold text-ink/70 dark:text-paper/70">สำรอง/กู้คืนข้อมูล</h2>
-        <p className="mb-3 text-xs leading-relaxed text-ink/50 dark:text-paper/50">
+        <p className="mb-3 text-xs leading-relaxed text-ink/65 dark:text-paper/65">
           ข้อมูลทั้งหมดเก็บอยู่ในเบราว์เซอร์นี้เท่านั้น แนะนำให้ส่งออกเก็บไว้เป็นระยะเพื่อกันข้อมูลหาย
         </p>
         <div className="flex flex-wrap gap-3">
@@ -110,7 +138,7 @@ export function Settings() {
 
       <section className="card p-4">
         <h2 className="mb-1 text-sm font-semibold text-ink/70 dark:text-paper/70">รีเซ็ตข้อมูล</h2>
-        <p className="mb-3 text-xs leading-relaxed text-ink/50 dark:text-paper/50">
+        <p className="mb-3 text-xs leading-relaxed text-ink/65 dark:text-paper/65">
           ล้างความคืบหน้า streak และประวัติทั้งหมด แนะนำให้ส่งออกสำรองไว้ก่อน
         </p>
         <button

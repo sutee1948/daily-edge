@@ -20,9 +20,11 @@ npm run build             # build production (validate-content + typecheck ใ�
 npm run preview           # ดูผล build
 npm run typecheck         # เช็ก TypeScript อย่างเดียว
 npm run validate-content  # เช็กคุณภาพเนื้อหาทุกบทตามเช็กลิสต์ใน docs/content-style-guide.md
+npm test                  # รัน unit test ทั้งหมดด้วย Vitest
+npm run test:watch        # เหมือนกันแต่รันค้างไว้ระหว่างพัฒนา
 ```
 
-## สถานะปัจจุบัน (Phase 1–4)
+## สถานะปัจจุบัน (Phase 1–5)
 
 - โครงแอป Vite + React + TypeScript + Tailwind + React Router + Zustand
 - Flow ครบวง: วันนี้เรียนอะไร → อ่านบท → ทำควิซ → ดูผล → ทำใหม่/เรียนซ้ำ/เรื่องเกี่ยวข้อง
@@ -48,5 +50,12 @@ npm run validate-content  # เช็กคุณภาพเนื้อหา�
 - **หน้า `/progress`** heatmap กิจกรรมย้อนหลัง, คะแนนเฉลี่ยรายหมวด, รายการ "บทที่ยังไม่แน่น"
 - **หน้า `/settings`** สลับธีม, ส่งออก/นำเข้าข้อมูลเป็นไฟล์ JSON (round-trip ตรงเป๊ะ), รีเซ็ตข้อมูล
 - ข้อมูลผู้ใช้เก็บใน localStorage ของเบราว์เซอร์ (ยังไม่มี backend) พร้อม versioning/migrate
+- **แอนิเมชัน**: ทรานซิชันหน้า (fade+slide), การ์ดควิซพลิกเวลาเปลี่ยนข้อ, วงแหวนคะแนน pop-in — ผ่าน `framer-motion` + `LazyMotion` (ตัดขนาดบันเดิล) และเคารพ `prefers-reduced-motion`
+- **คีย์บอร์ดลัด**: เลขข้อ `1`-`4` เลือกคำตอบ, `Enter` ไปข้อถัดไปหลังเฉลย (Quiz/Review), `/` โฟกัสช่องค้นหา (Library)
+- **PWA**: ติดตั้งลงมือถือได้ (`manifest.webmanifest` + ไอคอน SVG) และ**ใช้งานออฟไลน์ได้เต็มแอป** — service worker cache ทุกหน้า/JS/CSS (เพราะใช้ HashRouter ทุกเส้นทางจึงเสิร์ฟจาก `index.html` เดียวกัน) ยืนยันจากการตรวจ precache manifest ของไฟล์ build จริงแล้ว
+- **Accessibility**: contrast ทุกสีผ่าน WCAG AA (คำนวณ+ยืนยันด้วย Lighthouse จริง ได้ **100/100**), focus ring ชัดเจนทุกปุ่ม/ลิงก์, ปรับขนาดตัวอักษรได้ที่ `/settings`
+- **Vitest**: 74 unit tests ครอบคลุม dailyPicker/srs/recommend/quiz-scoring/streak/readingTime/contentValidation — รันผ่านหมดด้วย `npm test`
 
-ฟีเจอร์ที่เหลือ (micro-interaction, PWA/ออฟไลน์, คีย์บอร์ดลัด, unit test ฯลฯ) อยู่ใน Phase 5 เป็นต้นไป ตาม [PLAN.md](./PLAN.md#11-แผนงานรายเฟส-ขออนุมัติทีละเฟส)
+**⚠️ ข้อที่ยังไม่ผ่านเกณฑ์:** Lighthouse **Performance บน mobile throttling อยู่ที่ 76-87** (เป้าหมาย ≥90) — วัดจริงแล้วหลายรอบ สาเหตุคือแอปเป็น client-side-rendered SPA ล้วน (ไม่มี SSR/prerender) ทำให้ FCP/LCP ช้าภายใต้การจำลองมือถือ+เน็ตช้าของ Lighthouse (TBT และ CLS อยู่ในเกณฑ์ดีมาก ไม่ใช่ปัญหาโค้ดทำงานช้า) — บน **desktop preset ได้ 99/100** รายละเอียดและทางเลือกถัดไปดูที่ [PLAN.md ข้อ 12](./PLAN.md#12-ความเสี่ยงและวิธีรับมือ)
+
+ฟีเจอร์ที่เหลือ (เนื้อหาเพิ่มเป็น 70 บท, เผยแพร่จริง ฯลฯ) อยู่ใน Phase 6 เป็นต้นไป ตาม [PLAN.md](./PLAN.md#11-แผนงานรายเฟส-ขออนุมัติทีละเฟส)

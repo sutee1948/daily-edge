@@ -54,12 +54,12 @@ export function Bookmarks() {
     <Layout>
       <section className="mb-5">
         <h1 className="mb-1 text-2xl font-bold tracking-tight">🔖 ที่บันทึกไว้</h1>
-        <p className="text-sm text-ink/50 dark:text-paper/50">{lessons.length} บท</p>
+        <p className="text-sm text-ink/65 dark:text-paper/65">{lessons.length} บท</p>
       </section>
 
       {lessons.length === 0 ? (
         <div className="py-10 text-center">
-          <p className="mb-3 text-ink/50 dark:text-paper/50">ยังไม่มีบทที่บันทึกไว้</p>
+          <p className="mb-3 text-ink/65 dark:text-paper/65">ยังไม่มีบทที่บันทึกไว้</p>
           <Link to="/library" className="btn-secondary">
             ไปดูคลังบท
           </Link>

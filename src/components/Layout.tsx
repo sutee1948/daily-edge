@@ -1,7 +1,12 @@
-import { Link } from 'react-router-dom';
-import type { ReactNode } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { useEffect, useRef, type ReactNode } from 'react';
+import { m } from 'framer-motion';
 import { StreakBadge } from '@/components/StreakBadge';
 import { BottomNav } from '@/components/BottomNav';
+
+// ข้าม animation ตอนโหลดหน้าแรกสุดของเซสชัน (กันดีเลย์ FCP/LCP จากการ fade-in)
+// แต่ยังคงทรานซิชันไว้ตอนสลับหน้าในแอประหว่างใช้งานต่อไปตามปกติ
+let hasAnimatedOnce = false;
 
 export function Layout({
   children,
@@ -12,6 +17,13 @@ export function Layout({
   hideHeader?: boolean;
   hideNav?: boolean;
 }) {
+  const { pathname } = useLocation();
+  const skipInitialAnimation = useRef(!hasAnimatedOnce).current;
+
+  useEffect(() => {
+    hasAnimatedOnce = true;
+  }, []);
+
   return (
     <div className="min-h-dvh bg-paper text-ink dark:bg-[#17150f] dark:text-paper">
       {!hideHeader && (
@@ -24,7 +36,15 @@ export function Layout({
           </div>
         </header>
       )}
-      <main className={`mx-auto max-w-2xl px-4 pt-6 safe-bottom ${hideNav ? 'pb-16' : 'pb-24'}`}>{children}</main>
+      <m.main
+        key={pathname}
+        initial={skipInitialAnimation ? false : { opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+        className={`mx-auto max-w-2xl px-4 pt-6 safe-bottom ${hideNav ? 'pb-16' : 'pb-24'}`}
+      >
+        {children}
+      </m.main>
       {!hideNav && <BottomNav />}
     </div>
   );

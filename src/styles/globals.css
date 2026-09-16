@@ -43,6 +43,27 @@ html.dark ::-webkit-scrollbar-thumb {
   background-color: rgba(255, 255, 255, 0.15);
 }
 
+/* focus ring ที่มองเห็นชัดและสม่ำเสมอทุกองค์ประกอบที่กด/พิมพ์ได้ — สำหรับคีย์บอร์ดและ screen reader */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid #d6503f;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ให้ผู้ใช้ที่ตั้งค่า "ลดการเคลื่อนไหว" ในระบบไม่ต้องเจอแอนิเมชันเลย */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 @layer components {
   .btn-primary {
     @apply inline-flex items-center justify-center gap-2 rounded-full bg-ink px-6 py-3.5 text-base font-medium text-paper transition active:scale-[0.98] dark:bg-paper dark:text-ink;
@@ -51,7 +72,7 @@ html.dark ::-webkit-scrollbar-thumb {
     @apply inline-flex items-center justify-center gap-2 rounded-full border border-ink/15 bg-paper-raised px-6 py-3.5 text-base font-medium text-ink transition active:scale-[0.98] dark:border-white/15 dark:bg-white/5 dark:text-paper;
   }
   .btn-ghost {
-    @apply inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-medium text-ink/70 transition hover:text-ink dark:text-paper/60 dark:hover:text-paper;
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-medium text-ink/70 transition hover:text-ink dark:text-paper/65 dark:hover:text-paper;
   }
   .card {
     @apply rounded-xl2 border border-ink/10 bg-paper-raised shadow-sm dark:border-white/10 dark:bg-white/[0.04];

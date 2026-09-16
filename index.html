@@ -8,10 +8,29 @@
       name="description"
       content="DAILY EDGE — เรียนรู้วันละ 10 นาที: กลยุทธ์จีน จิตวิทยา การอ่านคน การบริหารคน ความสัมพันธ์ สมอง และการพัฒนาตนเอง"
     />
+    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+    <link rel="apple-touch-icon" href="/icon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- โหลดฟอนต์แบบไม่บล็อกการ render หน้าแรก: preload คู่กับ swap มาเป็น stylesheet ตอนโหลดเสร็จ
+         (มี fallback ผ่าน Noto Sans Thai/system-ui ใน tailwind.config.ts อยู่แล้วระหว่างรอฟอนต์โหลด) -->
     <link
+      rel="preload"
+      as="style"
       href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
     />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"
+      media="print"
+      onload="this.media='all'"
+    />
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"
+      />
+    </noscript>
     <title>DAILY EDGE — ความรู้วันละ 10 นาที</title>
   </head>
   <body class="font-thai bg-paper text-ink antialiased">

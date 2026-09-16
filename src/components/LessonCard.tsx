@@ -20,9 +20,9 @@ export function LessonCard({ lesson, reason }: { lesson: Lesson; reason?: string
         )}
       </div>
       <h3 className="text-lg font-semibold leading-snug text-ink group-hover:underline dark:text-paper">{lesson.title}</h3>
-      <p className="text-sm text-ink/60 dark:text-paper/60">{lesson.subtitle}</p>
-      {reason && <p className="text-xs text-ink/45 dark:text-paper/45">{reason}</p>}
-      <div className="mt-1 text-xs text-ink/50 dark:text-paper/50">⏱ ประมาณ {lesson.estimatedMinutes} นาที</div>
+      <p className="text-sm text-ink/65 dark:text-paper/65">{lesson.subtitle}</p>
+      {reason && <p className="text-xs text-ink/65 dark:text-paper/65">{reason}</p>}
+      <div className="mt-1 text-xs text-ink/65 dark:text-paper/65">⏱ ประมาณ {lesson.estimatedMinutes} นาที</div>
     </Link>
   );
 }

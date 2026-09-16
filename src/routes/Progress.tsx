@@ -27,7 +27,7 @@ export function Progress() {
     <Layout>
       <section className="mb-6">
         <h1 className="mb-1 text-2xl font-bold tracking-tight">ความคืบหน้า</h1>
-        <p className="text-sm text-ink/50 dark:text-paper/50">
+        <p className="text-sm text-ink/65 dark:text-paper/65">
           เรียนจบแล้ว {doneCount}/{ALL_LESSONS.length} บท · streak ปัจจุบัน {streak.current} วัน (สูงสุด {streak.best})
         </p>
       </section>
@@ -44,7 +44,7 @@ export function Progress() {
             <div key={cs.category} className="card flex items-center justify-between gap-3 p-3">
               <CategoryBadge category={cs.category} />
               <div className="flex items-center gap-3">
-                <span className="text-xs text-ink/45 dark:text-paper/45">
+                <span className="text-xs text-ink/65 dark:text-paper/65">
                   {cs.attemptedCount}/{cs.totalCount} บท
                 </span>
                 <span className="w-12 text-right text-sm font-semibold">
@@ -59,7 +59,7 @@ export function Progress() {
       <section>
         <h2 className="mb-3 text-sm font-semibold text-ink/70 dark:text-paper/70">🔁 บทที่ยังไม่แน่น</h2>
         {notYetSolid.length === 0 ? (
-          <p className="text-sm text-ink/50 dark:text-paper/50">ไม่มีบทค้างทบทวน เก่งมาก!</p>
+          <p className="text-sm text-ink/65 dark:text-paper/65">ไม่มีบทค้างทบทวน เก่งมาก!</p>
         ) : (
           <div className="space-y-2">
             {notYetSolid.map(({ entry, lesson }) => (
@@ -69,7 +69,7 @@ export function Progress() {
                 className="card flex items-center justify-between gap-3 p-3 transition hover:border-ink/25 dark:hover:border-white/25"
               >
                 <span className="text-sm font-medium">{lesson.title}</span>
-                <span className="shrink-0 text-xs text-ink/45 dark:text-paper/45">
+                <span className="shrink-0 text-xs text-ink/65 dark:text-paper/65">
                   {entry.dueDate <= today ? 'ถึงกำหนดแล้ว' : `นัดทบทวน ${entry.dueDate}`}
                 </span>
               </Link>

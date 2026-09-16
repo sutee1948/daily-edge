@@ -46,9 +46,9 @@ export function Result() {
       <section className="mb-8 flex flex-col items-center text-center">
         <ScoreRing score={attempt.score} total={attempt.total} />
         <p className={`mt-4 text-lg font-semibold ${BAND_META[band].tone}`}>{BAND_META[band].label}</p>
-        <p className="mt-1 text-sm text-ink/55 dark:text-paper/55">{lesson.title}</p>
+        <p className="mt-1 text-sm text-ink/65 dark:text-paper/65">{lesson.title}</p>
         {attempt.wrongQIds.length > 0 && (
-          <p className="mt-2 text-xs text-ink/45 dark:text-paper/45">🔁 พรุ่งนี้ระบบจะพาบทนี้กลับมาทบทวนสั้นๆ ให้อัตโนมัติ</p>
+          <p className="mt-2 text-xs text-ink/65 dark:text-paper/65">🔁 พรุ่งนี้ระบบจะพาบทนี้กลับมาทบทวนสั้นๆ ให้อัตโนมัติ</p>
         )}
       </section>
 
@@ -62,7 +62,7 @@ export function Result() {
                 <div key={q.id} className="card p-4">
                   <p className="mb-2 font-medium leading-relaxed">{q.prompt}</p>
                   <p className="text-sm leading-relaxed text-cat-brain">✓ {correct?.text}</p>
-                  <p className="mt-1 text-sm leading-relaxed text-ink/55 dark:text-paper/55">{correct?.explain}</p>
+                  <p className="mt-1 text-sm leading-relaxed text-ink/65 dark:text-paper/65">{correct?.explain}</p>
                 </div>
               );
             })}

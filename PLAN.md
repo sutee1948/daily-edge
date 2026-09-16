@@ -570,6 +570,7 @@ new knowledge to day/
 | localStorage หาย (ล้างเบราว์เซอร์) | เสีย streak/ประวัติ | Export JSON + เตือนสำรองทุก 30 วัน |
 | เบื่อหลังผ่านไป 2 สัปดาห์ | เลิกใช้ | หมุน format 6 แบบ + ข้ามหมวด + Track + สรุปสัปดาห์ |
 | ควิซง่ายเกินจนไม่ได้วัดอะไร | ความรู้ไม่ติด | ใช้คำถาม scenario เป็นหลัก ไม่ถามนิยาม |
+| **Lighthouse Performance บน mobile throttling ไม่ถึง 90** (พบใน Phase 5: วัดจริงได้ 76-87 ขณะที่ desktop ได้ 99, FCP/LCP ~3.2s เพราะเป็น client-side-rendered React SPA ล้วน ไม่มี SSR/prerender — TBT และ CLS อยู่ในเกณฑ์ดีมาก ไม่ใช่ปัญหาโค้ดช้า แต่คือเวลาที่ browser ต้องโหลด+รัน JS ทั้งก้อนก่อนเริ่ม paint อะไรได้เลย) | คะแนนไม่ผ่านเกณฑ์ Phase 5 ข้อ Performance บน mobile (Accessibility 100 ผ่านทั้งสองแบบ, Performance desktop 99 ผ่าน) | ทำไปแล้ว: preconnect+non-blocking font, defer SW register script, route-based code splitting, LazyMotion — ช่วยได้แต่ไม่พอ ทางที่เหลือคือ SSR/static-prerender (เช่นย้ายไป Next.js/Astro หรือใช้ vite-ssg) ซึ่งเป็นการรื้อสถาปัตยกรรมใหญ่ ไม่ใช่งาน "ขัดเงา" แล้ว — ต้องตัดสินใจร่วมกับเจ้าของโปรเจกต์ว่าจะทำต่อหรือยอมรับผลลัพธ์ปัจจุบัน |
 
 ---
 
@@ -606,6 +607,6 @@ new knowledge to day/
 | 2 ระบบรายวัน | ✅ เสร็จแล้ว | 2026-09-16 | อัลกอริทึมเลือกบท+streak/freeze/milestone+แนะนำหัวข้อแบบให้คะแนน+กันข้อสอบซ้ำ ตรวจด้วยสคริปต์จำลองหลายวันผ่านหมด |
 | 3 เนื้อหา 14 บท | ✅ เสร็จแล้ว | 2026-09-16 | ครบ 7 หมวด×2, validate-content ผ่าน 0 error, จำลอง 14 วันได้ครบ 14 บทไม่ซ้ำหมวด/format ติดกันเลย |
 | 4 คลัง + ทบทวน | ✅ เสร็จแล้ว | 2026-09-16 | /library ค้นหา+กรอง, /bookmarks, SRS ทบทวน (1→3→7→16→35 วัน), /progress heatmap+คะแนนรายหมวด, /settings export/import JSON — ตรวจ 3 เกณฑ์ผ่านหมดด้วยสคริปต์ |
-| 5 ขัดเงา | ⏳ | | |
+| 5 ขัดเงา | ⚠️ เสร็จบางส่วน | 2026-09-16 | Vitest 74 บททดสอบผ่านหมด, Accessibility 100/100 (จริงจาก Lighthouse ทั้ง mobile/desktop), PWA ติดตั้ง+ออฟไลน์ได้ (ยืนยันจาก precache manifest จริง), คีย์บอร์ดลัด+แอนิเมชันครบ **แต่ Performance บน mobile throttling ได้ 76-87 ไม่ถึง 90** (desktop ได้ 99) — เป็นข้อจำกัดของสถาปัตยกรรม CSR SPA ไม่ใช่บั๊ก ดูรายละเอียดในข้อ 12 |
 | 6 ขยาย 70 บท | ⏳ | | |
 | 7 เผยแพร่ | ⏳ | | |

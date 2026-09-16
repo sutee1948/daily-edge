@@ -8,5 +8,6 @@ dist-ssr
 .env.*
 !.env.example
 *.log
+lighthouse-*.json
 .vscode/*
 !.vscode/extensions.json

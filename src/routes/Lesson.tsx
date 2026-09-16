@@ -59,7 +59,7 @@ export function Lesson() {
         <div className="mb-4 flex flex-wrap items-center gap-2">
           <CategoryBadge category={lesson.category} />
           <FormatBadge format={lesson.format} />
-          <span className="text-sm text-ink/50 dark:text-paper/50">⏱ ~{lesson.estimatedMinutes} นาที</span>
+          <span className="text-sm text-ink/65 dark:text-paper/65">⏱ ~{lesson.estimatedMinutes} นาที</span>
           <button
             type="button"
             onClick={() => toggleBookmark(lesson.id)}
@@ -72,7 +72,7 @@ export function Lesson() {
         </div>
 
         <h1 className="mb-2 text-2xl font-bold leading-snug">{lesson.title}</h1>
-        <p className="mb-6 text-ink/60 dark:text-paper/60">{lesson.subtitle}</p>
+        <p className="mb-6 text-ink/65 dark:text-paper/65">{lesson.subtitle}</p>
 
         <p className="mb-8 text-lg leading-[1.9] text-ink/90 dark:text-paper/90">{lesson.hook}</p>
 
@@ -105,7 +105,7 @@ export function Lesson() {
               ⚠️ ข้อจำกัด: {lesson.evidence.caveat}
             </p>
           )}
-          <ul className="mt-3 space-y-1 text-sm text-ink/55 dark:text-paper/55">
+          <ul className="mt-3 space-y-1 text-sm text-ink/65 dark:text-paper/65">
             {lesson.evidence.sources.map((s, i) => (
               <li key={i}>
                 — {s.label}
