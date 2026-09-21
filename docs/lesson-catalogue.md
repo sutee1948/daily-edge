@@ -1,14 +1,17 @@
 # รายการบทเรียนทั้ง 70 บท (Phase 6)
 
-รูปแบบ: `id` — format / ระดับความยาก / แหล่งอ้างอิงหลัก  ✅ = เขียนแล้ว
+รูปแบบ: `id` — format / ระดับความยาก / แหล่งอ้างอิงหลัก
+
+**สถานะ: เขียนครบทั้ง 70 บทแล้ว (หมวดละ 10) และผ่าน `npm run validate-content` — ผลตรวจจริงดูได้ด้วย `npm run stats`**
+เส้นทางการเรียนที่เรียงบทเหล่านี้อยู่ที่ [src/content/tracks.ts](../src/content/tracks.ts)
 
 ## A · กลยุทธ์จีน
-- ✅ a01-sunzi-win-without-fighting · a02-man-tian-guo-hai · a03-borrow-a-knife · a04-wait-at-ease · a05-han-feizi-power-of-position · a06-guiguzi-bai-he · a07-use-of-spies · a08-wu-wei-leadership
+- a01-sunzi-win-without-fighting · a02-man-tian-guo-hai · a03-borrow-a-knife · a04-wait-at-ease · a05-han-feizi-power-of-position · a06-guiguzi-bai-he · a07-use-of-spies · a08-wu-wei-leadership
 - a09-empty-fort-signaling — decode d2 — Spence 1973, Zahavi 1975, Tenney et al. 2007, Kennedy/Anderson/Moore 2013
 - a10-liu-bei-vs-cao-cao — versus d2 — Mayer/Davis/Schoorman 1995, Colquitt et al. 2007
 
 ## B · อ่านคน
-- ✅ b01-thin-slicing · b03-lie-detection-myth
+- b01-thin-slicing · b03-lie-detection-myth
 - b02-fundamental-attribution-error — classic d1 — Jones & Harris 1967, Ross 1977
 - b04-spotlight-effect — story d1 — Gilovich/Medvec/Savitsky 2000
 - b05-halo-effect — classic d2 — Thorndike 1920, Nisbett & Wilson 1977
@@ -19,7 +22,7 @@
 - b10-dark-triad — classic d3 — Paulhus & Williams 2002
 
 ## C · บริหารคน
-- ✅ c01-psychological-safety-project-aristotle · c02-radical-candor
+- c01-psychological-safety-project-aristotle · c02-radical-candor
 - c03-effective-one-on-one — playbook d1
 - c04-feedback-intervention-theory — classic d2 — Kluger & DeNisi 1996
 - c05-delegation-levels — playbook d2 — Tannenbaum & Schmidt 1958
@@ -30,7 +33,7 @@
 - c10-task-vs-relationship-conflict — versus d3 — Jehn 1995, De Wit/Greer/Jehn 2012
 
 ## D · ความสัมพันธ์
-- ✅ d01-mere-exposure-effect · d05-similarity-not-opposites
+- d01-mere-exposure-effect · d05-similarity-not-opposites
 - d02-gottman-four-horsemen — classic d2
 - d03-attachment-styles-not-destiny — myth-bust d2 — Hazan & Shaver 1987, Fraley
 - d04-bids-for-connection — story d1 — Gottman
@@ -41,7 +44,7 @@
 - d10-ask-follow-up-questions — playbook d1 — Huang et al. 2017
 
 ## E · สมอง
-- ✅ e01-testing-effect-myth · e02-sleep-memory-consolidation
+- e01-testing-effect-myth · e02-sleep-memory-consolidation
 - e03-spacing-effect — classic d1 — Cepeda et al. 2006
 - e04-multitasking-myth — story d1 — Ophir/Nass/Wagner 2009, Rubinstein et al. 2001
 - e05-exercise-and-brain — classic d2 — Erickson et al. 2011
@@ -52,7 +55,7 @@
 - e10-false-memory — story d2 — Loftus & Palmer 1974, Loftus & Pickrell 1995
 
 ## F · พัฒนาตนเอง
-- ✅ f01-deliberate-practice-myth · f02-implementation-intentions
+- f01-deliberate-practice-myth · f02-implementation-intentions
 - f03-habit-66-days — myth-bust d1 — Lally et al. 2010
 - f04-growth-mindset-evidence — versus d3 — Sisk et al. 2018, Yeager et al. 2019
 - f05-fresh-start-effect — story d1 — Dai/Milkman/Riis 2014
@@ -63,7 +66,7 @@
 - f10-dichotomy-of-control — story d1 — Epictetus, CBT
 
 ## G · Dev & อาชีพ
-- ✅ g01-dora-metrics · g04-planning-fallacy
+- g01-dora-metrics · g04-planning-fallacy
 - g02-salary-negotiation — playbook d2 — Galinsky & Mussweiler 2001, Bowles/Babcock/Lai 2007
 - g03-code-review-evidence — classic d2 — Bacchelli & Bird 2013
 - g05-conways-law — story d2 — Conway 1968, MacCormack et al. 2012

@@ -8,6 +8,10 @@ import { ALL_LESSON_METAS, getLessonMeta } from '@/content';
 import { MAX_REROLLS_PER_DAY } from '@/lib/dailyPicker';
 import { nextUnseenMilestone } from '@/lib/streak';
 import { getDueReviews } from '@/lib/srs';
+import { TRACKS } from '@/content/tracks';
+import { pickActiveTrack } from '@/lib/trackProgress';
+import { recapTeaserTarget } from '@/lib/weeklyRecap';
+import { ContinueTrackCard } from '@/components/ContinueTrackCard';
 import { todayISO } from '@/lib/date';
 
 const MILESTONE_LABEL: Record<number, string> = {
@@ -34,6 +38,9 @@ export function Today() {
 
   const doneCount = Object.values(lessons).filter((p) => p.status === 'done').length;
   const milestone = nextUnseenMilestone(streak);
+  const activeTrack = pickActiveTrack(TRACKS, lessons);
+  const nextTrackLesson = activeTrack?.progress.nextLessonId ? getLessonMeta(activeTrack.progress.nextLessonId) : undefined;
+  const recapTarget = recapTeaserTarget(todayISO(), lessons, getLessonMeta);
   const dueReviews = getDueReviews(reviewQueue, todayISO())
     .map((e) => getLessonMeta(e.lessonId))
     .filter((l): l is NonNullable<typeof l> => !!l);
@@ -74,6 +81,19 @@ export function Today() {
             ))}
           </div>
         </section>
+      )}
+
+      {recapTarget !== null && (
+        <Link
+          to={recapTarget === 'last' ? '/progress?week=last' : '/progress'}
+          className="card mb-6 flex items-center justify-between gap-3 p-4 transition hover:border-ink/25 dark:hover:border-white/25"
+        >
+          <div>
+            <p className="text-sm font-semibold">📰 สรุป{recapTarget === 'last' ? 'สัปดาห์ที่แล้ว' : 'สัปดาห์นี้'}พร้อมอ่านแล้ว</p>
+            <p className="text-xs text-ink/65 dark:text-paper/65">ประโยคเด็ดของบทที่เรียน และสิ่งที่ควรลองต่อ</p>
+          </div>
+          <span aria-hidden>→</span>
+        </Link>
       )}
 
       <section className="mb-8">
@@ -127,6 +147,18 @@ export function Today() {
           <p className="text-sm text-ink/65 dark:text-paper/65">บทที่มีในตอนนี้</p>
         </div>
       </section>
+
+      {activeTrack && nextTrackLesson && (
+        <ContinueTrackCard track={activeTrack.track} progress={activeTrack.progress} nextLesson={nextTrackLesson} />
+      )}
+
+      <Link
+        to="/tracks"
+        className="card mb-3 flex items-center justify-between p-4 text-sm font-medium transition hover:border-ink/25 dark:hover:border-white/25"
+      >
+        🗺 เส้นทางการเรียน ({TRACKS.length} เส้น)
+        <span aria-hidden>→</span>
+      </Link>
 
       <Link
         to="/library"

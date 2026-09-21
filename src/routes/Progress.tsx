@@ -1,6 +1,7 @@
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { Layout } from '@/components/Layout';
 import { Heatmap } from '@/components/Heatmap';
+import { WeeklyRecapCard } from '@/components/WeeklyRecapCard';
 import { CategoryBadge } from '@/components/CategoryBadge';
 import { useUserStore } from '@/store/useUserStore';
 import { ALL_LESSON_METAS, getLessonMeta } from '@/content';
@@ -9,6 +10,8 @@ import { computeCategoryScores } from '@/lib/progressStats';
 import { todayISO } from '@/lib/date';
 
 export function Progress() {
+  const [searchParams] = useSearchParams();
+  const initialWeekOffset = searchParams.get('week') === 'last' ? -1 : 0;
   const lessons = useUserStore((s) => s.lessons);
   const streak = useUserStore((s) => s.streak);
   const reviewQueue = useUserStore((s) => s.reviewQueue);
@@ -31,6 +34,8 @@ export function Progress() {
           เรียนจบแล้ว {doneCount}/{ALL_LESSON_METAS.length} บท · streak ปัจจุบัน {streak.current} วัน (สูงสุด {streak.best})
         </p>
       </section>
+
+      <WeeklyRecapCard initialOffset={initialWeekOffset} />
 
       <section className="card mb-6 p-4">
         <h2 className="mb-3 text-sm font-semibold text-ink/70 dark:text-paper/70">กิจกรรมย้อนหลัง</h2>

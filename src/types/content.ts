@@ -92,3 +92,16 @@ export type LessonMeta = Pick<
   | 'wordCount'
   | 'estimatedMinutes'
 >;
+
+/** เส้นทางการเรียน (Track) — ชุดบทเรียนที่จัดลำดับจากง่ายไปยากสำหรับเป้าหมายเดียว
+ *  ใช้ id ของบทเรียนล้วนๆ (ไม่ซ้ำสำเนาเนื้อหา) จึงอยู่ในบันเดิลหลักได้โดยไม่บวม */
+export interface Track {
+  id: string;
+  title: string;
+  subtitle: string;
+  emoji: string;
+  /** ผู้เรียนแบบไหนเหมาะกับเส้นทางนี้ — แสดงในหน้ารายละเอียด */
+  audience: string;
+  /** รหัสบทตามลำดับที่ควรเรียน */
+  lessonIds: string[];
+}

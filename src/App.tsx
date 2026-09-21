@@ -11,6 +11,8 @@ const Quiz = lazy(() => import('@/routes/Quiz').then((m) => ({ default: m.Quiz }
 const Result = lazy(() => import('@/routes/Result').then((m) => ({ default: m.Result })));
 const Review = lazy(() => import('@/routes/Review').then((m) => ({ default: m.Review })));
 const Library = lazy(() => import('@/routes/Library').then((m) => ({ default: m.Library })));
+const Tracks = lazy(() => import('@/routes/Tracks').then((m) => ({ default: m.Tracks })));
+const TrackDetail = lazy(() => import('@/routes/TrackDetail').then((m) => ({ default: m.TrackDetail })));
 const Bookmarks = lazy(() => import('@/routes/Bookmarks').then((m) => ({ default: m.Bookmarks })));
 const Progress = lazy(() => import('@/routes/Progress').then((m) => ({ default: m.Progress })));
 const Settings = lazy(() => import('@/routes/Settings').then((m) => ({ default: m.Settings })));
@@ -81,6 +83,8 @@ export function App() {
             <Route path="/lesson/:id/result" element={<Result />} />
             <Route path="/lesson/:id/review" element={<Review />} />
             <Route path="/library" element={<Library />} />
+            <Route path="/tracks" element={<Tracks />} />
+            <Route path="/tracks/:id" element={<TrackDetail />} />
             <Route path="/bookmarks" element={<Bookmarks />} />
             <Route path="/progress" element={<Progress />} />
             <Route path="/settings" element={<Settings />} />

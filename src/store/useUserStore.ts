@@ -75,15 +75,16 @@ export const useUserStore = create<UserState & UserActions>()(
         const today = todayISO();
         if (state.dailyPick?.date === today) return;
 
-        const picked = pickTodayLesson(state, { today });
-        if (!picked) return;
-
-        // เก็บบทของ "วันก่อนหน้า" ที่เพิ่งพ้นไปลงประวัติ ก่อนตั้งบทของวันนี้
+        // เก็บบทของ "วันก่อนหน้า" ที่เพิ่งพ้นไปลงประวัติ *ก่อน* เลือกบทของวันนี้ — ไม่งั้นกติกา "เลี่ยงหมวด/รูปแบบเดียวกับเมื่อวาน"
+        // จะมองไม่เห็นบทของเมื่อวาน (ตอนนั้นมันยังอยู่ใน dailyPick ไม่ใช่ pickHistory)
         const pickHistory = state.dailyPick
           ? [...state.pickHistory, { date: state.dailyPick.date, lessonId: state.dailyPick.lessonId }].slice(
               -PICK_HISTORY_LIMIT,
             )
           : state.pickHistory;
+
+        const picked = pickTodayLesson({ ...state, pickHistory }, { today });
+        if (!picked) return;
 
         set({
           dailyPick: { date: today, lessonId: picked.id, rerollsUsed: 0, shownIds: [picked.id] },
