@@ -12,7 +12,8 @@
     "validate-content": "tsx scripts/validate-content.ts",
     "test": "npm run gen-content && vitest run",
     "test:watch": "vitest",
-    "gen-content": "tsx scripts/generate-content-meta.ts"
+    "gen-content": "tsx scripts/generate-content-meta.ts",
+    "stats": "tsx scripts/lesson-stats.ts"
   },
   "dependencies": {
     "framer-motion": "^13.4.0",
