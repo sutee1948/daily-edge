@@ -1,4 +1,4 @@
-import type { Lesson, LessonSource } from '@/types/content';
+import type { Lesson, LessonMeta, LessonSource } from '@/types/content';
 
 // ภาษาไทยไม่มีช่องว่างคั่นคำ จึงนับ "คำ" แบบประมาณการ:
 // ความยาวคำไทยเฉลี่ย ~4.5 ตัวอักษร/คำ (อ้างอิงสถิติคลังคำทั่วไป)
@@ -44,4 +44,10 @@ export function computeReadingStats(lesson: LessonSource): Pick<Lesson, 'wordCou
 
 export function resolveLesson(source: LessonSource): Lesson {
   return { ...source, ...computeReadingStats(source) };
+}
+
+/** ตัดเหลือเฉพาะข้อมูลเบา (ไม่มี beats/evidence/questions) — ใช้สร้าง src/content/meta.generated.ts */
+export function toMeta(lesson: Lesson): LessonMeta {
+  const { id, title, subtitle, category, format, difficulty, tags, hook, relatedIds, wordCount, estimatedMinutes } = lesson;
+  return { id, title, subtitle, category, format, difficulty, tags, hook, relatedIds, wordCount, estimatedMinutes };
 }

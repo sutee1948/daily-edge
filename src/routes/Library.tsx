@@ -2,10 +2,10 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Layout } from '@/components/Layout';
 import { LessonCard } from '@/components/LessonCard';
-import { ALL_LESSONS } from '@/content';
+import { ALL_LESSON_METAS, loadAllLessons } from '@/content';
 import { CATEGORY_META } from '@/lib/categories';
 import { lessonBodyText } from '@/lib/readingTime';
-import type { Category } from '@/types/content';
+import type { Category, Lesson } from '@/types/content';
 
 const CATEGORY_LIST = Object.values(CATEGORY_META);
 
@@ -18,6 +18,8 @@ function matchesQuery(haystack: string[], query: string): boolean {
 export function Library() {
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState<Category | 'all'>('all');
+  // เนื้อหาเต็มของทุกบท โหลดแบบ lazy เฉพาะเมื่อผู้ใช้เริ่มพิมพ์ค้นหา (จะได้ค้นข้อความในเนื้อหาได้ ไม่ใช่แค่ชื่อบท)
+  const [bodies, setBodies] = useState<Map<string, string> | null>(null);
   const searchRef = useRef<HTMLInputElement>(null);
 
   // คีย์บอร์ดลัด: กด "/" ที่ไหนก็ได้ในหน้านี้เพื่อโฟกัสช่องค้นหาทันที
@@ -34,22 +36,44 @@ export function Library() {
     return () => window.removeEventListener('keydown', onKeyDown);
   }, []);
 
-  const filtered = useMemo(() => {
-    return ALL_LESSONS.filter((lesson) => {
-      if (category !== 'all' && lesson.category !== category) return false;
-      return matchesQuery([lesson.title, lesson.subtitle, ...lesson.tags, lessonBodyText(lesson)], query);
+  const hasQuery = query.trim().length > 0;
+  useEffect(() => {
+    if (!hasQuery || bodies) return;
+    let cancelled = false;
+    loadAllLessons().then((lessons: Lesson[]) => {
+      if (!cancelled) setBodies(new Map(lessons.map((l) => [l.id, lessonBodyText(l)])));
     });
-  }, [query, category]);
+    return () => {
+      cancelled = true;
+    };
+  }, [hasQuery, bodies]);
+
+  const filtered = useMemo(() => {
+    return ALL_LESSON_METAS.filter((lesson) => {
+      if (category !== 'all' && lesson.category !== category) return false;
+      const haystack = [lesson.title, lesson.subtitle, lesson.hook, ...lesson.tags];
+      const body = bodies?.get(lesson.id);
+      if (body) haystack.push(body);
+      return matchesQuery(haystack, query);
+    });
+  }, [query, category, bodies]);
+
+  const searchingBodies = hasQuery && !bodies;
 
   return (
     <Layout>
       <section className="mb-5">
         <h1 className="mb-1 text-2xl font-bold tracking-tight">คลังบททั้งหมด</h1>
         <div className="flex items-center justify-between">
-          <p className="text-sm text-ink/65 dark:text-paper/65">{ALL_LESSONS.length} บท</p>
-          <Link to="/bookmarks" className="text-sm font-medium text-edge">
-            🔖 ที่บันทึกไว้
-          </Link>
+          <p className="text-sm text-ink/65 dark:text-paper/65">{ALL_LESSON_METAS.length} บท</p>
+          <div className="flex gap-4 text-sm font-medium">
+            <Link to="/tracks" className="text-edge">
+              🧭 เส้นทางการเรียน
+            </Link>
+            <Link to="/bookmarks" className="text-edge">
+              🔖 ที่บันทึกไว้
+            </Link>
+          </div>
         </div>
       </section>
 
@@ -63,6 +87,11 @@ export function Library() {
           aria-label="ค้นหาบทเรียน"
           className="w-full rounded-xl2 border border-ink/15 bg-paper-raised px-4 py-3 text-base outline-none focus:border-edge dark:border-white/15 dark:bg-white/5"
         />
+        {searchingBodies && (
+          <p className="mt-2 text-xs text-ink/65 dark:text-paper/65" role="status">
+            กำลังโหลดเนื้อหาทุกบทเพื่อค้นข้อความเต็ม…
+          </p>
+        )}
       </div>
 
       <div className="mb-5 flex flex-wrap gap-2">

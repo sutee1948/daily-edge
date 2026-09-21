@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { estimateWordCount, computeReadingStats } from '@/lib/readingTime';
-import { ALL_LESSONS } from '@/content';
+import { ALL_LESSONS_EAGER as ALL_LESSONS } from '@/content/testing';
 import type { LessonSource } from '@/types/content';
 
 describe('estimateWordCount', () => {

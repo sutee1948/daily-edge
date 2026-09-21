@@ -4,23 +4,25 @@ import { Layout } from '@/components/Layout';
 import { CategoryBadge } from '@/components/CategoryBadge';
 import { FormatBadge } from '@/components/FormatBadge';
 import { ProgressBar } from '@/components/ProgressBar';
-import { getLesson } from '@/content';
+import { getLessonMeta } from '@/content';
+import { useLesson } from '@/lib/useLesson';
 import { useUserStore } from '@/store/useUserStore';
 
 export function Lesson() {
   const { id = '' } = useParams();
   const [searchParams] = useSearchParams();
-  const lesson = getLesson(id);
+  const meta = getLessonMeta(id);
+  const { lesson, missing } = useLesson(meta ? id : undefined);
   const markLessonStarted = useUserStore((s) => s.markLessonStarted);
-  const bookmarked = useUserStore((s) => (lesson ? s.lessons[lesson.id]?.bookmarked ?? false : false));
+  const bookmarked = useUserStore((s) => s.lessons[id]?.bookmarked ?? false);
   const toggleBookmark = useUserStore((s) => s.toggleBookmark);
   const [scrollPct, setScrollPct] = useState(0);
   const articleRef = useRef<HTMLDivElement>(null);
   const beatRefs = useRef<Array<HTMLElement | null>>([]);
 
   useEffect(() => {
-    if (lesson) markLessonStarted(lesson.id);
-  }, [lesson, markLessonStarted]);
+    if (meta) markLessonStarted(meta.id);
+  }, [meta, markLessonStarted]);
 
   useEffect(() => {
     const focus = searchParams.get('focus');
@@ -47,7 +49,22 @@ export function Lesson() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  if (!lesson) return <Navigate to="/" replace />;
+  if (!meta || missing) return <Navigate to="/" replace />;
+
+  // ระหว่างโหลดเนื้อหาเต็ม (chunk ของบทนี้) แสดงหัวเรื่องจาก meta ไปก่อน กันหน้ากระตุก
+  if (!lesson) {
+    return (
+      <Layout>
+        <div className="mb-4 flex flex-wrap items-center gap-2">
+          <CategoryBadge category={meta.category} />
+          <FormatBadge format={meta.format} />
+        </div>
+        <h1 className="mb-2 text-2xl font-bold leading-snug">{meta.title}</h1>
+        <p className="mb-6 text-ink/65 dark:text-paper/65">{meta.subtitle}</p>
+        <p className="text-sm text-ink/65 dark:text-paper/65" role="status">กำลังโหลดเนื้อหา…</p>
+      </Layout>
+    );
+  }
 
   return (
     <Layout>

@@ -1,9 +1,9 @@
 import { Link } from 'react-router-dom';
-import type { Lesson } from '@/types/content';
+import type { LessonMeta } from '@/types/content';
 import { CategoryBadge } from '@/components/CategoryBadge';
 import { useUserStore } from '@/store/useUserStore';
 
-export function LessonCard({ lesson, reason }: { lesson: Lesson; reason?: string }) {
+export function LessonCard({ lesson, reason }: { lesson: LessonMeta; reason?: string }) {
   const status = useUserStore((s) => s.lessons[lesson.id]?.status ?? 'new');
 
   return (

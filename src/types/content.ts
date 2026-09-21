@@ -75,3 +75,20 @@ export interface Lesson extends LessonSource {
   wordCount: number;
   estimatedMinutes: number;
 }
+
+/** ข้อมูลเบาของบทเรียน — อยู่ในบันเดิลหลักตลอด ใช้กับหน้ารายการ/การ์ด/ตัวเลือกบทประจำวัน/ระบบแนะนำ
+ *  ส่วนเนื้อหาเต็ม (beats, evidence, quiz ฯลฯ) โหลดแยกตามบทเมื่อเปิดอ่านจริง (ดู src/content/index.ts) */
+export type LessonMeta = Pick<
+  Lesson,
+  | 'id'
+  | 'title'
+  | 'subtitle'
+  | 'category'
+  | 'format'
+  | 'difficulty'
+  | 'tags'
+  | 'hook'
+  | 'relatedIds'
+  | 'wordCount'
+  | 'estimatedMinutes'
+>;

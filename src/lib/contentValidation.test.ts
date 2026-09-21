@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { validateLessons } from '@/lib/contentValidation';
-import { ALL_LESSONS } from '@/content';
+import { ALL_LESSONS_EAGER as ALL_LESSONS } from '@/content/testing';
 import type { Lesson } from '@/types/content';
 
 function baseLesson(overrides: Partial<Lesson> = {}): Lesson {

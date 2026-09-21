@@ -2,7 +2,8 @@ import { Link, Navigate, useNavigate, useParams } from 'react-router-dom';
 import { Layout } from '@/components/Layout';
 import { ScoreRing } from '@/components/ScoreRing';
 import { LessonCard } from '@/components/LessonCard';
-import { getLesson, ALL_LESSONS } from '@/content';
+import { getLessonMeta, ALL_LESSON_METAS } from '@/content';
+import { useLesson } from '@/lib/useLesson';
 import { useUserStore } from '@/store/useUserStore';
 import { recommendLessons } from '@/lib/recommend';
 
@@ -21,20 +22,28 @@ const BAND_META = {
 export function Result() {
   const { id = '' } = useParams();
   const navigate = useNavigate();
-  const lesson = getLesson(id);
+  const meta = getLessonMeta(id);
+  const { lesson, missing } = useLesson(meta ? id : undefined);
   const progress = useUserStore((s) => s.lessons[id]);
   const allProgress = useUserStore((s) => s.lessons);
   const finishToday = useUserStore((s) => s.finishToday);
 
-  if (!lesson) return <Navigate to="/" replace />;
+  if (!meta || missing) return <Navigate to="/" replace />;
 
   const attempt = progress?.attempts[progress.attempts.length - 1];
   if (!attempt) return <Navigate to={`/lesson/${id}/quiz`} replace />;
+  if (!lesson) {
+    return (
+      <Layout>
+        <p className="text-ink/65 dark:text-paper/65" role="status">กำลังโหลดผลลัพธ์…</p>
+      </Layout>
+    );
+  }
 
   const band = bandOf(attempt.score, attempt.total);
   const wrongQuestions = lesson.questions.filter((q) => attempt.wrongQIds.includes(q.id));
   const firstWrongBeat = wrongQuestions.find((q) => q.targetBeat !== undefined)?.targetBeat;
-  const related = recommendLessons(lesson.id, ALL_LESSONS, allProgress, 3);
+  const related = recommendLessons(lesson.id, ALL_LESSON_METAS, allProgress, 3);
 
   function handleFinishToday() {
     finishToday();

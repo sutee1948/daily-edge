@@ -2,11 +2,11 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Layout } from '@/components/Layout';
 import { CategoryBadge } from '@/components/CategoryBadge';
-import { getLesson } from '@/content';
+import { getLessonMeta } from '@/content';
 import { useUserStore } from '@/store/useUserStore';
-import type { Lesson } from '@/types/content';
+import type { LessonMeta } from '@/types/content';
 
-function BookmarkCard({ lesson }: { lesson: Lesson }) {
+function BookmarkCard({ lesson }: { lesson: LessonMeta }) {
   const note = useUserStore((s) => s.lessons[lesson.id]?.note ?? '');
   const setNote = useUserStore((s) => s.setNote);
   const toggleBookmark = useUserStore((s) => s.toggleBookmark);
@@ -48,7 +48,7 @@ export function Bookmarks() {
   const bookmarkedIds = Object.entries(lessonsProgress)
     .filter(([, p]) => p.bookmarked)
     .map(([id]) => id);
-  const lessons = bookmarkedIds.map((id) => getLesson(id)).filter((l): l is Lesson => !!l);
+  const lessons = bookmarkedIds.map((id) => getLessonMeta(id)).filter((l): l is LessonMeta => !!l);
 
   return (
     <Layout>

@@ -4,7 +4,7 @@ import { Layout } from '@/components/Layout';
 import { CategoryBadge } from '@/components/CategoryBadge';
 import { FormatBadge } from '@/components/FormatBadge';
 import { useUserStore } from '@/store/useUserStore';
-import { ALL_LESSONS, getLesson } from '@/content';
+import { ALL_LESSON_METAS, getLessonMeta } from '@/content';
 import { MAX_REROLLS_PER_DAY } from '@/lib/dailyPicker';
 import { nextUnseenMilestone } from '@/lib/streak';
 import { getDueReviews } from '@/lib/srs';
@@ -29,13 +29,13 @@ export function Today() {
     ensureDailyPick();
   }, [ensureDailyPick]);
 
-  const todayLesson = dailyPick ? getLesson(dailyPick.lessonId) : undefined;
+  const todayLesson = dailyPick ? getLessonMeta(dailyPick.lessonId) : undefined;
   const rerollsLeft = MAX_REROLLS_PER_DAY - (dailyPick?.rerollsUsed ?? 0);
 
   const doneCount = Object.values(lessons).filter((p) => p.status === 'done').length;
   const milestone = nextUnseenMilestone(streak);
   const dueReviews = getDueReviews(reviewQueue, todayISO())
-    .map((e) => getLesson(e.lessonId))
+    .map((e) => getLessonMeta(e.lessonId))
     .filter((l): l is NonNullable<typeof l> => !!l);
 
   return (
@@ -123,7 +123,7 @@ export function Today() {
           <p className="text-sm text-ink/65 dark:text-paper/65">บทที่เรียนจบแล้ว</p>
         </div>
         <div className="card p-4">
-          <p className="text-2xl font-bold">{ALL_LESSONS.length}</p>
+          <p className="text-2xl font-bold">{ALL_LESSON_METAS.length}</p>
           <p className="text-sm text-ink/65 dark:text-paper/65">บทที่มีในตอนนี้</p>
         </div>
       </section>
@@ -132,7 +132,7 @@ export function Today() {
         to="/library"
         className="card flex items-center justify-between p-4 text-sm font-medium transition hover:border-ink/25 dark:hover:border-white/25"
       >
-        📚 ดูคลังบททั้งหมด ({ALL_LESSONS.length} บท)
+        📚 ดูคลังบททั้งหมด ({ALL_LESSON_METAS.length} บท)
         <span aria-hidden>→</span>
       </Link>
     </Layout>

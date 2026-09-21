@@ -1,4 +1,4 @@
-import type { Lesson } from '@/types/content';
+import type { LessonMeta } from '@/types/content';
 import type { LessonProgress } from '@/types/user';
 import { categoryOf } from '@/lib/categories';
 import { todayISO, diffDaysISO } from '@/lib/date';
@@ -15,12 +15,12 @@ const RECENT_DAYS = 30;
 const MAX_SAME_CATEGORY = 1;
 
 export interface Recommendation {
-  lesson: Lesson;
+  lesson: LessonMeta;
   score: number;
   reason: string;
 }
 
-function tagOverlapRatio(source: Lesson, candidate: Lesson): { ratio: number; shared: string[] } {
+function tagOverlapRatio(source: LessonMeta, candidate: LessonMeta): { ratio: number; shared: string[] } {
   const shared = source.tags.filter((t) => candidate.tags.includes(t));
   const ratio = source.tags.length > 0 ? shared.length / source.tags.length : 0;
   return { ratio, shared };
@@ -38,7 +38,7 @@ function masteredLastAttempt(progress: ProgressMap, lessonId: string): boolean {
   return !!last && last.total > 0 && last.score === last.total;
 }
 
-function scoreCandidate(source: Lesson, candidate: Lesson, progress: ProgressMap, today: string) {
+function scoreCandidate(source: LessonMeta, candidate: LessonMeta, progress: ProgressMap, today: string) {
   const { ratio, shared } = tagOverlapRatio(source, candidate);
   const inRelated = source.relatedIds.includes(candidate.id);
   const sameCategory = candidate.category === source.category;
@@ -57,7 +57,7 @@ function scoreCandidate(source: Lesson, candidate: Lesson, progress: ProgressMap
   return { score, parts, sharedTags: shared, sameCategory };
 }
 
-function reasonFor(candidate: Lesson, parts: ReturnType<typeof scoreCandidate>['parts'], sharedTags: string[]): string {
+function reasonFor(candidate: LessonMeta, parts: ReturnType<typeof scoreCandidate>['parts'], sharedTags: string[]): string {
   const options: { value: number; label: string }[] = [
     { value: parts.related, label: 'เพราะผู้เขียนแนะนำให้เรียนต่อจากบทนี้' },
     { value: parts.tag, label: sharedTags[0] ? `เพราะเกี่ยวข้องกับ "${sharedTags[0]}"` : '' },
@@ -74,7 +74,7 @@ function reasonFor(candidate: Lesson, parts: ReturnType<typeof scoreCandidate>['
  *  บังคับหมวดเดียวกับบทต้นทางได้ไม่เกิน 1 ใน `count` เพื่อให้มีอย่างน้อย 1 เรื่องข้ามหมวดเสมอ (ถ้ามีให้เลือก) */
 export function recommendLessons(
   sourceLessonId: string,
-  allLessons: Lesson[],
+  allLessons: LessonMeta[],
   progress: ProgressMap,
   count = 3,
 ): Recommendation[] {

@@ -3,7 +3,9 @@ import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import { AnimatePresence, m } from 'framer-motion';
 import { Layout } from '@/components/Layout';
 import { ProgressBar } from '@/components/ProgressBar';
-import { getLesson } from '@/content';
+import { getLessonMeta } from '@/content';
+import { useLesson } from '@/lib/useLesson';
+import type { Lesson } from '@/types/content';
 import { pickQuizQuestions, scoreQuiz } from '@/lib/quiz';
 import { useUserStore } from '@/store/useUserStore';
 
@@ -16,8 +18,22 @@ const TYPE_LABEL: Record<string, string> = {
 
 export function Quiz() {
   const { id = '' } = useParams();
+  const meta = getLessonMeta(id);
+  const { lesson, missing } = useLesson(meta ? id : undefined);
+
+  if (!meta || missing) return <Navigate to="/" replace />;
+  if (!lesson) {
+    return (
+      <Layout hideNav>
+        <p className="text-ink/65 dark:text-paper/65" role="status">กำลังโหลดคำถาม…</p>
+      </Layout>
+    );
+  }
+  return <QuizSession lesson={lesson} />;
+}
+
+function QuizSession({ lesson }: { lesson: Lesson }) {
   const navigate = useNavigate();
-  const lesson = getLesson(id);
   const submitQuizAttempt = useUserStore((s) => s.submitQuizAttempt);
   const recordQuizQuestionSet = useUserStore((s) => s.recordQuizQuestionSet);
 
@@ -86,7 +102,6 @@ export function Quiz() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [revealed, q, answers, index]);
 
-  if (!lesson) return <Navigate to="/" replace />;
   if (questions.length === 0) {
     return (
       <Layout hideNav>

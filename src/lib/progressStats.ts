@@ -1,4 +1,4 @@
-import type { Category, Lesson } from '@/types/content';
+import type { Category, LessonMeta } from '@/types/content';
 import type { LessonProgress } from '@/types/user';
 
 export interface CategoryScore {
@@ -10,7 +10,7 @@ export interface CategoryScore {
 }
 
 /** คะแนนเฉลี่ยรายหมวด — ใช้ "ความพยายามล่าสุด" ของแต่ละบทเป็นตัวแทน ไม่นับบทที่ยังไม่เคยทำควิซ */
-export function computeCategoryScores(allLessons: Lesson[], lessons: Record<string, LessonProgress>): CategoryScore[] {
+export function computeCategoryScores(allLessons: LessonMeta[], lessons: Record<string, LessonProgress>): CategoryScore[] {
   const categories = Array.from(new Set(allLessons.map((l) => l.category)));
 
   return categories.map((category) => {

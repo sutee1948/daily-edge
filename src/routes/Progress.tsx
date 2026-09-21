@@ -3,7 +3,7 @@ import { Layout } from '@/components/Layout';
 import { Heatmap } from '@/components/Heatmap';
 import { CategoryBadge } from '@/components/CategoryBadge';
 import { useUserStore } from '@/store/useUserStore';
-import { ALL_LESSONS, getLesson } from '@/content';
+import { ALL_LESSON_METAS, getLessonMeta } from '@/content';
 import { buildActivityMap } from '@/lib/heatmap';
 import { computeCategoryScores } from '@/lib/progressStats';
 import { todayISO } from '@/lib/date';
@@ -14,21 +14,21 @@ export function Progress() {
   const reviewQueue = useUserStore((s) => s.reviewQueue);
 
   const activity = buildActivityMap(lessons);
-  const categoryScores = computeCategoryScores(ALL_LESSONS, lessons);
+  const categoryScores = computeCategoryScores(ALL_LESSON_METAS, lessons);
   const doneCount = Object.values(lessons).filter((p) => p.status === 'done').length;
   const today = todayISO();
 
   const notYetSolid = [...reviewQueue]
     .sort((a, b) => a.dueDate.localeCompare(b.dueDate))
-    .map((e) => ({ entry: e, lesson: getLesson(e.lessonId) }))
-    .filter((x): x is { entry: (typeof reviewQueue)[number]; lesson: NonNullable<ReturnType<typeof getLesson>> } => !!x.lesson);
+    .map((e) => ({ entry: e, lesson: getLessonMeta(e.lessonId) }))
+    .filter((x): x is { entry: (typeof reviewQueue)[number]; lesson: NonNullable<ReturnType<typeof getLessonMeta>> } => !!x.lesson);
 
   return (
     <Layout>
       <section className="mb-6">
         <h1 className="mb-1 text-2xl font-bold tracking-tight">ความคืบหน้า</h1>
         <p className="text-sm text-ink/65 dark:text-paper/65">
-          เรียนจบแล้ว {doneCount}/{ALL_LESSONS.length} บท · streak ปัจจุบัน {streak.current} วัน (สูงสุด {streak.best})
+          เรียนจบแล้ว {doneCount}/{ALL_LESSON_METAS.length} บท · streak ปัจจุบัน {streak.current} วัน (สูงสุด {streak.best})
         </p>
       </section>
 

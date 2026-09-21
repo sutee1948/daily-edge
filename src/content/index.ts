@@ -1,30 +1,65 @@
-import type { Lesson, LessonSource } from '@/types/content';
+import type { Lesson, LessonMeta, LessonSource } from '@/types/content';
 import { resolveLesson } from '@/lib/readingTime';
+import { LESSON_METAS } from './meta.generated';
 
-import { a01 } from './a-china/a01';
-import { a05 } from './a-china/a05';
-import { b01 } from './b-read-people/b01';
-import { b03 } from './b-read-people/b03';
-import { c01 } from './c-people-mgmt/c01';
-import { c02 } from './c-people-mgmt/c02';
-import { d01 } from './d-relationships/d01';
-import { d05 } from './d-relationships/d05';
-import { e01 } from './e-brain/e01';
-import { e02 } from './e-brain/e02';
-import { f01 } from './f-self-dev/f01';
-import { f02 } from './f-self-dev/f02';
-import { g01 } from './g-dev-career/g01';
-import { g04 } from './g-dev-career/g04';
+/**
+ * เนื้อหาแบ่งเป็น 2 ชั้น เพื่อไม่ให้บันเดิลหลักบวมเมื่อจำนวนบทเพิ่มเป็นหลักสิบ:
+ *  1) meta  — ข้อมูลเบาของทุกบท อยู่ในบันเดิลหลักตลอด (สร้างอัตโนมัติ ดู scripts/generate-content-meta.ts)
+ *  2) lesson เต็ม — โหลดแยกตามบทด้วย dynamic import เมื่อเปิดอ่าน/ทำควิซ (Vite แยกเป็น chunk ต่อบทให้เอง)
+ */
 
-// รวมเนื้อหาทั้งหมด — เพิ่มบทใหม่ที่นี่เมื่อเขียนเสร็จ (Phase 6+)
-const ALL_SOURCES: LessonSource[] = [a01, a05, b01, b03, c01, c02, d01, d05, e01, e02, f01, f02, g01, g04];
+export const ALL_LESSON_METAS: LessonMeta[] = LESSON_METAS;
 
-export const ALL_LESSONS: Lesson[] = ALL_SOURCES.map(resolveLesson);
+const META_MAP: Map<string, LessonMeta> = new Map(LESSON_METAS.map((m) => [m.id, m]));
 
-export const LESSON_MAP: Record<string, Lesson> = Object.fromEntries(
-  ALL_LESSONS.map((lesson) => [lesson.id, lesson]),
-);
+export function getLessonMeta(id: string): LessonMeta | undefined {
+  return META_MAP.get(id);
+}
 
-export function getLesson(id: string): Lesson | undefined {
-  return LESSON_MAP[id];
+// import.meta.glob สร้าง dynamic import ให้ทุกไฟล์ใต้ src/content/<หมวด>/<รหัส>.ts (ไม่รวม index/meta ที่อยู่ชั้นบน)
+const lessonModules = import.meta.glob<Record<string, LessonSource>>('./*/*.ts');
+
+const loaderByCode = new Map<string, () => Promise<Record<string, LessonSource>>>();
+for (const [path, loader] of Object.entries(lessonModules)) {
+  const code = path.match(/\/([a-g]\d{2})\.ts$/)?.[1];
+  if (code) loaderByCode.set(code, loader);
+}
+
+const lessonCache = new Map<string, Lesson>();
+const inflight = new Map<string, Promise<Lesson | undefined>>();
+
+/** คืนบทที่โหลดไว้แล้วแบบทันที (ไม่ต้องรอ) หรือ undefined ถ้ายังไม่เคยโหลด */
+export function getCachedLesson(id: string): Lesson | undefined {
+  return lessonCache.get(id);
+}
+
+export function loadLesson(id: string): Promise<Lesson | undefined> {
+  const cached = lessonCache.get(id);
+  if (cached) return Promise.resolve(cached);
+
+  const running = inflight.get(id);
+  if (running) return running;
+
+  const code = id.match(/^([a-g]\d{2})-/)?.[1];
+  const loader = code ? loaderByCode.get(code) : undefined;
+  if (!loader) return Promise.resolve(undefined);
+
+  const promise = loader()
+    .then((mod) => {
+      const source = Object.values(mod)[0];
+      const lesson = resolveLesson(source);
+      lessonCache.set(id, lesson);
+      return lesson;
+    })
+    .finally(() => inflight.delete(id));
+
+  inflight.set(id, promise);
+  return promise;
+}
+
+/** โหลดเนื้อหาเต็มทุกบท — ใช้เฉพาะตอนต้องค้นข้อความเต็ม (หน้าคลังบท) เพราะเป็นการดึงทุก chunk */
+export function loadAllLessons(): Promise<Lesson[]> {
+  return Promise.all(LESSON_METAS.map((m) => loadLesson(m.id))).then((list) =>
+    list.filter((l): l is Lesson => !!l),
+  );
 }

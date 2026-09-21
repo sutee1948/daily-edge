@@ -5,13 +5,14 @@
   "type": "module",
   "description": "DAILY EDGE — เรียนรู้วันละ 10 นาที: กลยุทธ์จีน จิตวิทยา การอ่านคน การบริหารคน ความสัมพันธ์ สมอง การพัฒนาตนเอง และอาชีพโปรแกรมเมอร์",
   "scripts": {
-    "dev": "vite",
-    "build": "npm run validate-content && tsc --noEmit && vite build",
+    "dev": "npm run gen-content && vite",
+    "build": "npm run gen-content && npm run validate-content && tsc --noEmit && vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
     "validate-content": "tsx scripts/validate-content.ts",
-    "test": "vitest run",
-    "test:watch": "vitest"
+    "test": "npm run gen-content && vitest run",
+    "test:watch": "vitest",
+    "gen-content": "tsx scripts/generate-content-meta.ts"
   },
   "dependencies": {
     "framer-motion": "^13.4.0",
