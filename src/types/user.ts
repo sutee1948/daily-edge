@@ -49,9 +49,17 @@ export interface ReviewQueueEntry {
   intervalIdx: number; // index ใน SRS_INTERVALS_DAYS
 }
 
+/** ตั้งค่าการแจ้งเตือนรายวัน (Phase 7) — ดูตรรกะว่าควรยิงเมื่อไรที่ src/lib/dailyReminder.ts */
+export interface ReminderSettings {
+  enabled: boolean;
+  /** เวลาที่อยากถูกเตือน แบบ 24 ชั่วโมง 'HH:mm' */
+  time: string;
+}
+
 export interface UserSettings {
   theme: 'light' | 'dark' | 'system';
   fontScale: number;
+  reminder: ReminderSettings;
 }
 
 export interface UserState {
@@ -63,4 +71,6 @@ export interface UserState {
   pickHistory: PickHistoryEntry[];
   reviewQueue: ReviewQueueEntry[];
   settings: UserSettings;
+  /** วันที่ (ISO) ล่าสุดที่ยิงแจ้งเตือนรายวันไปแล้ว — กันแจ้งซ้ำในวันเดียวกัน */
+  lastNotifiedDate: string | null;
 }

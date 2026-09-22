@@ -31,13 +31,14 @@ function makeLesson(id: string, category: Category, format: LessonFormat, diffic
 
 function freshUser(overrides: Partial<UserState> = {}): UserState {
   return {
-    version: 3,
+    version: 4,
     streak: initialStreak(),
     lessons: {},
     dailyPick: null,
     pickHistory: [],
     reviewQueue: [],
-    settings: { theme: 'system', fontScale: 1 },
+    settings: { theme: 'system', fontScale: 1, reminder: { enabled: false, time: '19:00' } },
+    lastNotifiedDate: null,
     ...overrides,
   };
 }

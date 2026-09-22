@@ -3,6 +3,7 @@ import { HashRouter, Route, Routes, useLocation } from 'react-router-dom';
 import { LazyMotion, domAnimation } from 'framer-motion';
 import { Today } from '@/routes/Today';
 import { useUserStore } from '@/store/useUserStore';
+import { DailyReminderScheduler } from '@/components/DailyReminderScheduler';
 
 // แบ่งโค้ดตามเส้นทาง (route-based code splitting) — คงเหลือแค่ Today.tsx (หน้าแรก) ไว้ในบันเดิลหลัก
 // ที่เหลือโหลดแยกทีหลังตามจริงเมื่อผู้ใช้ไปหน้านั้นๆ ลดขนาดบันเดิลตั้งต้นลงมาก (ดีต่อ Lighthouse Performance)
@@ -72,6 +73,7 @@ export function App() {
       <ScrollToTop />
       <ThemeSync />
       <FontScaleSync />
+      <DailyReminderScheduler />
       {/* LazyMotion + domAnimation: ใช้ <m.*> แทน <motion.*> ทั่วแอป เพื่อตัดขนาดบันเดิลของ
           framer-motion ลงมาก (ไม่โหลดฟีเจอร์ drag/layout ที่ไม่ได้ใช้) */}
       <LazyMotion features={domAnimation} strict>

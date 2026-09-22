@@ -6,9 +6,10 @@ import { todayISO } from '@/lib/date';
 import { pickTodayLesson, MAX_REROLLS_PER_DAY } from '@/lib/dailyPicker';
 import { bumpStreak, initialStreak } from '@/lib/streak';
 import { upsertReviewOnMainQuiz, advanceReview } from '@/lib/srs';
+import { defaultReminderSettings } from '@/lib/dailyReminder';
 
 const STORAGE_KEY = 'daily-edge:user-state:v1';
-const CURRENT_VERSION = 3;
+const CURRENT_VERSION = 4;
 const PICK_HISTORY_LIMIT = 14;
 
 function emptyProgress(): LessonProgress {
@@ -23,7 +24,8 @@ function initialState(): UserState {
     dailyPick: null,
     pickHistory: [],
     reviewQueue: [],
-    settings: { theme: 'system', fontScale: 1 },
+    settings: { theme: 'system', fontScale: 1, reminder: defaultReminderSettings() },
+    lastNotifiedDate: null,
   };
 }
 
@@ -41,6 +43,8 @@ interface UserActions {
   toggleBookmark: (lessonId: string) => void;
   setNote: (lessonId: string, note: string) => void;
   updateSettings: (partial: Partial<UserState['settings']>) => void;
+  /** บันทึกว่าเพิ่งยิงแจ้งเตือนรายวันไปแล้วในวันนี้ (กันแจ้งซ้ำ) */
+  markReminderSent: (dateISO: string) => void;
   /** จบเซสชันวันนี้ด้วยตัวเอง (ปุ่ม "พอแค่นี้วันนี้") — บันทึก streak ถ้ายังไม่ได้บันทึก */
   finishToday: () => void;
   /** ปิดแบนเนอร์ฉลอง milestone (7/30/100 วัน) กันไม่ให้เด้งซ้ำ */
@@ -181,6 +185,10 @@ export const useUserStore = create<UserState & UserActions>()(
         set((state) => ({ settings: { ...state.settings, ...partial } }));
       },
 
+      markReminderSent: (dateISO) => {
+        set({ lastNotifiedDate: dateISO });
+      },
+
       acknowledgeMilestone: (milestone) => {
         set((state) => ({
           streak: { ...state.streak, milestonesSeen: [...state.streak.milestonesSeen, milestone] },
@@ -189,13 +197,20 @@ export const useUserStore = create<UserState & UserActions>()(
 
       exportState: () => {
         // หยิบเฉพาะฟิลด์ข้อมูล (ไม่รวม action) แบบเจาะจง กัน export หลุดฟังก์ชันติดไปโดยไม่ตั้งใจ
-        const { version, streak, lessons, dailyPick, pickHistory, reviewQueue, settings } = get();
-        return { version, streak, lessons, dailyPick, pickHistory, reviewQueue, settings };
+        const { version, streak, lessons, dailyPick, pickHistory, reviewQueue, settings, lastNotifiedDate } = get();
+        return { version, streak, lessons, dailyPick, pickHistory, reviewQueue, settings, lastNotifiedDate };
       },
 
       importState: (data) => {
         if (!isValidUserState(data)) return false;
-        set({ ...data, version: CURRENT_VERSION });
+        // ไฟล์ backup อาจ export มาจากเวอร์ชันก่อน v4 (ยังไม่มี reminder/lastNotifiedDate) — เติมค่าเริ่มต้นให้ก่อน
+        // ต่างจาก persist.migrate ตรงที่ path นี้มาจากไฟล์ JSON ที่ผู้ใช้เลือกเอง ไม่ได้ผ่าน migrate ของ zustand/persist
+        set({
+          ...data,
+          settings: { ...data.settings, reminder: data.settings?.reminder ?? defaultReminderSettings() },
+          lastNotifiedDate: data.lastNotifiedDate ?? null,
+          version: CURRENT_VERSION,
+        });
         return true;
       },
 
@@ -219,6 +234,10 @@ export const useUserStore = create<UserState & UserActions>()(
         }
         if (version < 3) {
           persisted.reviewQueue = persisted.reviewQueue ?? [];
+        }
+        if (version < 4) {
+          persisted.settings = { ...persisted.settings, reminder: persisted.settings?.reminder ?? defaultReminderSettings() };
+          persisted.lastNotifiedDate = persisted.lastNotifiedDate ?? null;
         }
         return persisted as UserState;
       },

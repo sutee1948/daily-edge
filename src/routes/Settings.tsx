@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 import { Layout } from '@/components/Layout';
 import { useUserStore } from '@/store/useUserStore';
+import { isNotificationSupported, requestNotificationPermission } from '@/lib/notificationBridge';
 
 const THEME_OPTIONS = [
   { value: 'light', label: '☀️ สว่าง' },
@@ -25,6 +26,21 @@ export function Settings() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [importMsg, setImportMsg] = useState<{ ok: boolean; text: string } | null>(null);
   const [confirmingReset, setConfirmingReset] = useState(false);
+  const [permissionDenied, setPermissionDenied] = useState(false);
+
+  async function handleReminderToggle(nextEnabled: boolean) {
+    setPermissionDenied(false);
+    if (!nextEnabled) {
+      updateSettings({ reminder: { ...settings.reminder, enabled: false } });
+      return;
+    }
+    const permission = await requestNotificationPermission();
+    if (permission === 'granted') {
+      updateSettings({ reminder: { ...settings.reminder, enabled: true } });
+    } else {
+      setPermissionDenied(true);
+    }
+  }
 
   function handleExport() {
     const data = exportState();
@@ -115,6 +131,58 @@ export function Settings() {
             </button>
           ))}
         </div>
+      </section>
+
+      <section className="card mb-6 p-4">
+        <div className="mb-1 flex items-center justify-between gap-3">
+          <h2 className="text-sm font-semibold text-ink/70 dark:text-paper/70">🔔 แจ้งเตือนรายวัน</h2>
+          <button
+            type="button"
+            role="switch"
+            aria-checked={settings.reminder.enabled}
+            onClick={() => handleReminderToggle(!settings.reminder.enabled)}
+            disabled={!isNotificationSupported()}
+            className={`relative h-6 w-11 shrink-0 rounded-full transition disabled:cursor-not-allowed disabled:opacity-40 ${
+              settings.reminder.enabled ? 'bg-edge' : 'bg-ink/15 dark:bg-white/15'
+            }`}
+          >
+            <span
+              className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition ${
+                settings.reminder.enabled ? 'left-[22px]' : 'left-0.5'
+              }`}
+            />
+          </button>
+        </div>
+
+        {!isNotificationSupported() ? (
+          <p className="text-xs leading-relaxed text-ink/65 dark:text-paper/65">
+            เบราว์เซอร์นี้ไม่รองรับการแจ้งเตือน
+          </p>
+        ) : (
+          <>
+            <p className="mb-3 text-xs leading-relaxed text-ink/65 dark:text-paper/65">
+              เตือนตอนที่ยังไม่ได้เรียนวันนี้ ใช้ได้แน่นอนเมื่อเปิดแท็บ/แอปทิ้งไว้ในเบราว์เซอร์ ส่วนตอนปิดแอปสนิทจะแจ้งเตือนได้
+              เฉพาะบางเบราว์เซอร์ที่ติดตั้งแอปแล้ว (เช่น Chrome บนแอนดรอยด์/เดสก์ท็อป) และเวลาที่แจ้งอาจไม่ตรงเป๊ะตามที่ตั้งไว้ —
+              ไม่รองรับใน Safari/iOS เลย
+            </p>
+            {permissionDenied && (
+              <p className="mb-3 text-xs font-medium text-cat-china">
+                เบราว์เซอร์ปฏิเสธสิทธิ์การแจ้งเตือน กรุณาเปิดสิทธิ์ให้เว็บไซต์นี้ในตั้งค่าเบราว์เซอร์แล้วลองอีกครั้ง
+              </p>
+            )}
+            {settings.reminder.enabled && (
+              <label className="flex items-center gap-2 text-sm">
+                เตือนเวลา
+                <input
+                  type="time"
+                  value={settings.reminder.time}
+                  onChange={(e) => updateSettings({ reminder: { ...settings.reminder, time: e.target.value } })}
+                  className="rounded-lg border border-ink/10 bg-paper px-2 py-1.5 text-sm outline-none focus:border-edge dark:border-white/10 dark:bg-white/5"
+                />
+              </label>
+            )}
+          </>
+        )}
       </section>
 
       <section className="card mb-6 p-4">

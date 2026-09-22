@@ -1,0 +1,48 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# กันสอง deploy วิ่งพร้อมกันแล้วชนกัน — ตัวใหม่มาให้ตัวที่กำลังรอคิวอยู่ (ยังไม่เริ่ม) ยกเลิกไปเลย
+# แต่ไม่ยกเลิกตัวที่กำลัง deploy จริงอยู่กลางคัน (cancel-in-progress: false) กัน production ค้างครึ่งๆ กลางๆ
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      # รัน unit test ทั้งหมดก่อน (ไม่ได้รวมอยู่ใน build script) กัน deploy โค้ดที่ test พังขึ้นเว็บจริง
+      - run: npm test
+      # build script รัน gen-content + validate-content + typecheck ในตัวอยู่แล้ว (ดู package.json) —
+      # ถ้าเนื้อหาหรือ type พังจะ fail ตรงนี้ก่อน ไม่ปล่อยให้ deploy ต่อ
+      - run: npm run build
+        env:
+          GH_PAGES_BASE: /daily-edge/
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

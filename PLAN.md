@@ -566,6 +566,16 @@ new knowledge to day/
 - Deploy: GitHub Pages / Netlify / หรือเผยแพร่เป็น Artifact ให้มีลิงก์เปิดจากมือถือได้เลย
 - ตัวเลือกเสริม (เลือกเฉพาะที่อยากได้): sync ข้ามเครื่อง, แจ้งเตือนรายวัน, โหมดฟังด้วย TTS ภาษาไทย, ส่งออกโน้ตเข้า Obsidian/Notion
 
+**ผลที่ทำจริง (✅ 2026-09-23, เลือก: GitHub Pages + แจ้งเตือนรายวัน):**
+
+- **Deploy — GitHub Pages ผ่าน GitHub Actions** ([.github/workflows/deploy.yml](./.github/workflows/deploy.yml)): push เข้า `main` แล้ว build (`npm test` + `npm run build` ซึ่งมี validate-content/typecheck ในตัว) จากนั้น deploy อัตโนมัติผ่าน `actions/deploy-pages` ไม่ต้องใช้ `gh-pages` branch แยก — `vite.config.ts` อ่าน `GH_PAGES_BASE` จาก env (ตั้งเฉพาะใน workflow) เพื่อ build เป็น subpath `/daily-edge/` โดย dev/preview ในเครื่องยังรันที่ root `/` เหมือนเดิม ตั้ง manifest `start_url`/`scope` เป็น `.` (relative) แทน hardcode path ให้ใช้ได้ทั้งสองที่โดยไม่ต้องพึ่ง base ซ้ำสองจุด — HashRouter เดิมทำให้ไม่ต้องมี `404.html` fallback เพราะทุกเส้นทางเสิร์ฟจาก `index.html` เดียวกันอยู่แล้ว
+- **แจ้งเตือนรายวัน**: ตั้งเวลาที่ `/settings` (ค่าเริ่มต้นปิดไว้ ต้องกดเปิดเองและขอสิทธิ์ Notification ก่อน) มีสองชั้น
+  1. **ตัวเช็กหลัก** ([src/components/DailyReminderScheduler.tsx](./src/components/DailyReminderScheduler.tsx)): เช็กทุก 60 วินาทีขณะแท็บ/แอปเปิดอยู่ (+ตอนกลับมาโฟกัสแท็บ) ว่ายังไม่ได้เรียนวันนี้และถึงเวลาที่ตั้งหรือยัง ตรรกะเป็น pure function แยกไว้ที่ [src/lib/dailyReminder.ts](./src/lib/dailyReminder.ts) (ทดสอบเองได้ครบไม่ต้องพึ่ง Notification API จริง)
+  2. **ตาข่ายรองรับ** ผ่าน Periodic Background Sync ([public/sw-notifications.js](./public/sw-notifications.js) ถูกดึงเข้า service worker ผ่าน `workbox.importScripts`): พยายามแจ้งเตือนแม้ไม่ได้เปิดแท็บทิ้งไว้ โดยอ่านสถานะจาก IndexedDB ที่หน้าเว็บ sync ให้ (service worker เข้า localStorage ของหน้าเว็บไม่ได้)
+  - **ข้อจำกัดที่บอกผู้ใช้ตรงๆ ใน `/settings`:** ชั้นที่ 2 รองรับเฉพาะ Chrome/Edge ที่ติดตั้งแอปแล้วและมี engagement พอ (เบราว์เซอร์เป็นคนตัดสินเอง ไม่ใช่เวลาที่ตั้งเป๊ะ) **ไม่รองรับ Safari/iOS และ Firefox เลย** — ไม่มีทางทำให้แน่นอน 100% ได้จริงเพราะแอปนี้ไม่มี backend/push server (ต้องมีเซิร์ฟเวอร์กลางถึงจะใช้ Web Push API แบบเต็มรูปแบบได้)
+- Vitest เพิ่มเป็น 133 (จาก 124) — เพิ่มเทสของ `dailyReminder.ts` (9 ข้อ) และ smoke test เดิมยังผ่านทั้งหมด
+- **สิ่งที่ไม่ได้ทำ (เลือกข้ามตามที่ผู้ใช้ตอบ):** sync ข้ามเครื่อง (ต้องมี backend ซึ่งขัดกับสถาปัตยกรรม local-only ปัจจุบัน — ถ้าต้องการจริงควรคุยแยกเป็นงานใหญ่), TTS ภาษาไทย, ส่งออกโน้ตเข้า Obsidian/Notion
+
 ---
 
 ## 12. ความเสี่ยงและวิธีรับมือ
@@ -617,4 +627,4 @@ new knowledge to day/
 | 4 คลัง + ทบทวน | ✅ เสร็จแล้ว | 2026-09-16 | /library ค้นหา+กรอง, /bookmarks, SRS ทบทวน (1→3→7→16→35 วัน), /progress heatmap+คะแนนรายหมวด, /settings export/import JSON — ตรวจ 3 เกณฑ์ผ่านหมดด้วยสคริปต์ |
 | 5 ขัดเงา | ⚠️ เสร็จบางส่วน | 2026-09-16 | Vitest 74 บททดสอบผ่านหมด, Accessibility 100/100 (จริงจาก Lighthouse ทั้ง mobile/desktop), PWA ติดตั้ง+ออฟไลน์ได้ (ยืนยันจาก precache manifest จริง), คีย์บอร์ดลัด+แอนิเมชันครบ **แต่ Performance บน mobile throttling ได้ 76-87 ไม่ถึง 90** (desktop ได้ 99) — เป็นข้อจำกัดของสถาปัตยกรรม CSR SPA ไม่ใช่บั๊ก ดูรายละเอียดในข้อ 12 |
 | 6 ขยาย 70 บท | ✅ เสร็จแล้ว | 2026-09-22 | เนื้อหาครบ 70 บท (หมวดละ 10, validate-content 0 error/0 warning) + เส้นทางการเรียน 10 เส้น (`/tracks`, การ์ด "เรียนต่อ" บน Today) + สรุปรายสัปดาห์ (`/progress`) + โหลดบทแบบ lazy ต่อบท; จำลอง 70 วันผ่าน store จริงได้ครบ 70 บทไม่ซ้ำ ไม่มีหมวดซ้ำติดกัน; Vitest 124 ผ่านหมด; แก้บั๊กใน `ensureDailyPick` ที่กติกา "เลี่ยงหมวด/format ของเมื่อวาน" มองไม่เห็นบทของเมื่อวาน |
-| 7 เผยแพร่ | ⏳ | | |
+| 7 เผยแพร่ | ✅ เสร็จแล้ว | 2026-09-23 | เลือก GitHub Pages (deploy ผ่าน GitHub Actions, ไม่ต้องมี backend) + แจ้งเตือนรายวัน (ตัวเช็กหลักตอนแอปเปิดอยู่ + ตาข่ายรองรับผ่าน Periodic Background Sync ที่มีข้อจำกัดตามเบราว์เซอร์ บอกผู้ใช้ตรงๆ ใน `/settings`) ข้ามฟีเจอร์เสริมอื่น (sync ข้ามเครื่อง/TTS/Obsidian-Notion) ตามที่ผู้ใช้เลือก; Vitest 133 ผ่านหมด |
