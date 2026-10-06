@@ -41,7 +41,13 @@ export function Layout({
         initial={skipInitialAnimation ? false : { opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-        className={`mx-auto max-w-2xl px-4 pt-6 safe-bottom ${hideNav ? 'pb-16' : 'pb-24'}`}
+        // padding ล่าง = ความสูง BottomNav (~4rem) + safe-area ของมือถือ + ระยะเผื่อ ให้เลื่อนเนื้อหาพ้นเมนูล่างได้
+        // (ห้ามใช้ .safe-bottom ที่นี่ — มันเป็น CSS นอก layer จึงทับ pb-* ของ Tailwind จน padding เหลือแค่ safe-area)
+        className={`mx-auto max-w-2xl px-4 pt-6 ${
+          hideNav
+            ? 'pb-[calc(4rem+env(safe-area-inset-bottom))]'
+            : 'pb-[calc(9rem+env(safe-area-inset-bottom))]'
+        }`}
       >
         {children}
       </m.main>
